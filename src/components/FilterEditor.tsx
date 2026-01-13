@@ -123,7 +123,11 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
               <h3 className="font-display font-semibold text-lg mb-4">Filters</h3>
 
               {/* Apply to all toggle */}
-              <label className="flex items-center gap-3 mb-4 cursor-pointer group">
+              <button 
+                type="button"
+                onClick={() => setApplyToAll(!applyToAll)}
+                className="flex items-center gap-3 mb-4 cursor-pointer group w-full text-left"
+              >
                 <div
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                     applyToAll
@@ -134,7 +138,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
                   {applyToAll && <Check className="w-3 h-3 text-primary-foreground" />}
                 </div>
                 <span className="text-sm font-medium">Apply to all photos</span>
-              </label>
+              </button>
 
               {/* Filter options */}
               <div className="grid grid-cols-2 gap-2">
