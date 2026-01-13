@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Download, RotateCcw, Heart, Sparkles, Grid2X2, LayoutList, Film, Rows3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Photo, FilterType, Sticker } from '@/types/photobooth';
+import { Photo, FilterType, Sticker, TextOverlay } from '@/types/photobooth';
 
 interface DownloadViewProps {
   photos: Photo[];
@@ -120,6 +120,37 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         });
       };
 
+      const drawTextOverlays = (
+        ctx: CanvasRenderingContext2D,
+        textOverlays: TextOverlay[],
+        photoX: number,
+        photoY: number,
+        photoWidth: number,
+        photoHeight: number
+      ) => {
+        textOverlays.forEach((textOverlay) => {
+          const textX = photoX + (textOverlay.x / 100) * photoWidth;
+          const textY = photoY + (textOverlay.y / 100) * photoHeight;
+          
+          ctx.save();
+          ctx.translate(textX, textY);
+          ctx.rotate((textOverlay.rotation * Math.PI) / 180);
+          ctx.font = `bold ${textOverlay.fontSize}px ${textOverlay.fontFamily}`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          // Draw text shadow for better visibility
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+          
+          ctx.fillStyle = textOverlay.color;
+          ctx.fillText(textOverlay.text, 0, 0);
+          ctx.restore();
+        });
+      };
+
       const drawPhotoWithBorder = (
         ctx: CanvasRenderingContext2D,
         filteredCanvas: HTMLCanvasElement,
@@ -169,6 +200,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           const y = headerHeight + stripPadding + i * (photoHeight + padding);
           drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoWidth, photoHeight);
           drawStickers(ctx, photo.stickers, x, y, photoWidth, photoHeight);
+          drawTextOverlays(ctx, photo.textOverlays, x, y, photoWidth, photoHeight);
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -218,6 +250,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           const y = headerHeight + stripPadding + row * (photoSize + padding);
           drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoSize, photoSize, 10);
           drawStickers(ctx, photo.stickers, x, y, photoSize, photoSize);
+          drawTextOverlays(ctx, photo.textOverlays, x, y, photoSize, photoSize);
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -254,6 +287,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           const y = headerHeight + stripPadding;
           drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoWidth, photoHeight);
           drawStickers(ctx, photo.stickers, x, y, photoWidth, photoHeight);
+          drawTextOverlays(ctx, photo.textOverlays, x, y, photoWidth, photoHeight);
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -304,6 +338,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           ctx.fillRect(x - 4, y - 4, photoWidth + 8, photoHeight + 8);
           ctx.drawImage(filteredCanvas, x, y);
           drawStickers(ctx, photo.stickers, x, y, photoWidth, photoHeight);
+          drawTextOverlays(ctx, photo.textOverlays, x, y, photoWidth, photoHeight);
         }
 
         // Film text

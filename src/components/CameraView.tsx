@@ -55,6 +55,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
             filter: 'none',
             timestamp: Date.now(),
             stickers: [],
+            textOverlays: [],
           };
           
           setPhotos((prev) => {

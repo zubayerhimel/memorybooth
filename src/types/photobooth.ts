@@ -9,12 +9,24 @@ export interface Sticker {
   rotation: number; // rotation in degrees
 }
 
+export interface TextOverlay {
+  id: string;
+  text: string;
+  x: number; // percentage position (0-100)
+  y: number; // percentage position (0-100)
+  fontSize: number; // font size in pixels
+  color: string; // hex color
+  fontFamily: string;
+  rotation: number; // rotation in degrees
+}
+
 export interface Photo {
   id: string;
   dataUrl: string;
   filter: FilterType;
   timestamp: number;
   stickers: Sticker[];
+  textOverlays: TextOverlay[];
 }
 
 export interface FilterOption {
