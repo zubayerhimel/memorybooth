@@ -17,6 +17,13 @@ const FILTERS: FilterOption[] = [
   { id: 'pop-art', name: 'Pop Art', className: 'filter-pop-art' },
   { id: 'cool', name: 'Cool', className: 'filter-cool' },
   { id: 'warm', name: 'Warm', className: 'filter-warm' },
+  { id: 'cyberpunk', name: 'Cyberpunk', className: 'filter-cyberpunk' },
+  { id: 'neon', name: 'Neon', className: 'filter-neon' },
+  { id: 'vaporwave', name: 'Vaporwave', className: 'filter-vaporwave' },
+  { id: 'noir', name: 'Noir', className: 'filter-noir' },
+  { id: 'dreamy', name: 'Dreamy', className: 'filter-dreamy' },
+  { id: 'electric', name: 'Electric', className: 'filter-electric' },
+  { id: 'blur', name: 'Blur', className: 'filter-blur' },
 ];
 
 export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) => {
@@ -141,7 +148,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
               </button>
 
               {/* Filter options */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1">
                 {FILTERS.map((filter) => (
                   <button
                     key={filter.id}

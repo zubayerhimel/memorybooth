@@ -320,3 +320,31 @@
 .filter-warm {
   filter: saturate(110%) sepia(15%) brightness(105%);
 }
+
+.filter-cyberpunk {
+  filter: contrast(130%) saturate(150%) hue-rotate(300deg) brightness(95%);
+}
+
+.filter-neon {
+  filter: contrast(120%) saturate(200%) brightness(110%) hue-rotate(330deg);
+}
+
+.filter-vaporwave {
+  filter: saturate(180%) hue-rotate(260deg) contrast(90%) brightness(110%);
+}
+
+.filter-noir {
+  filter: grayscale(100%) contrast(140%) brightness(90%);
+}
+
+.filter-dreamy {
+  filter: blur(0.5px) saturate(130%) brightness(115%) contrast(90%);
+}
+
+.filter-electric {
+  filter: saturate(250%) contrast(130%) hue-rotate(180deg) brightness(105%);
+}
+
+.filter-blur {
+  filter: blur(2px) brightness(105%);
+}

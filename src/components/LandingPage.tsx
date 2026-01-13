@@ -95,7 +95,7 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
         className="animate-slide-up font-display"
         style={{ animationDelay: '0.6s' }}
       >
-        <Camera className="w-5 h-5" />
+        <Camera className="size-8" />
         Start Photo Booth
       </Button>
 

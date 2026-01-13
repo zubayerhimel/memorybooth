@@ -1,4 +1,4 @@
-export type FilterType = 'none' | 'bw' | 'sepia' | 'vintage' | 'pop-art' | 'cool' | 'warm';
+export type FilterType = 'none' | 'bw' | 'sepia' | 'vintage' | 'pop-art' | 'cool' | 'warm' | 'cyberpunk' | 'neon' | 'vaporwave' | 'noir' | 'dreamy' | 'electric' | 'blur';
 
 export interface Sticker {
   id: string;
