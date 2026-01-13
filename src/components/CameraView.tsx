@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Camera, RotateCcw, AlertCircle } from 'lucide-react';
+import { Camera, RotateCcw, AlertCircle, SwitchCamera, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCamera } from '@/hooks/useCamera';
 import { Photo } from '@/types/photobooth';
@@ -10,14 +10,16 @@ interface CameraViewProps {
 }
 
 const MAX_PHOTOS = 4;
-const COUNTDOWN_SECONDS = 3;
+const TIMER_OPTIONS = [0, 3, 5, 10];
 
 export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
-  const { videoRef, canvasRef, isStreaming, error, startCamera, stopCamera, capturePhoto } = useCamera();
+  const { videoRef, canvasRef, isStreaming, error, facingMode, startCamera, stopCamera, capturePhoto, flipCamera } = useCamera();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [showFlash, setShowFlash] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [selectedTimer, setSelectedTimer] = useState(3);
+  const [showTimerOptions, setShowTimerOptions] = useState(false);
 
   useEffect(() => {
     startCamera();
@@ -33,7 +35,38 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
     if (isCapturing || photos.length >= MAX_PHOTOS) return;
 
     setIsCapturing(true);
-    let count = COUNTDOWN_SECONDS;
+    setShowTimerOptions(false);
+
+    // Instant capture when timer is 0
+    if (selectedTimer === 0) {
+      triggerFlash();
+      const dataUrl = capturePhoto();
+      
+      if (dataUrl) {
+        const newPhoto: Photo = {
+          id: crypto.randomUUID(),
+          dataUrl,
+          filter: 'none',
+          timestamp: Date.now(),
+          stickers: [],
+          textOverlays: [],
+        };
+        
+        setPhotos((prev) => {
+          const updated = [...prev, newPhoto];
+          if (updated.length >= MAX_PHOTOS) {
+            setTimeout(() => onPhotosComplete(updated), 500);
+          }
+          return updated;
+        });
+      }
+      
+      setIsCapturing(false);
+      return;
+    }
+
+    // Countdown capture
+    let count = selectedTimer;
     setCountdown(count);
 
     const countdownInterval = setInterval(() => {
@@ -70,7 +103,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
         setIsCapturing(false);
       }
     }, 1000);
-  }, [capturePhoto, isCapturing, onPhotosComplete, photos.length, triggerFlash]);
+  }, [capturePhoto, isCapturing, onPhotosComplete, photos.length, triggerFlash, selectedTimer]);
 
   const handleRetake = () => {
     setPhotos([]);
@@ -161,6 +194,42 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 <RotateCcw className="w-5 h-5" />
               </Button>
 
+              {/* Timer selector */}
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => setShowTimerOptions(!showTimerOptions)}
+                  className="h-12 w-12"
+                  disabled={isCapturing}
+                >
+                  <Timer className="w-5 h-5" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                    {selectedTimer === 0 ? '⚡' : selectedTimer}
+                  </span>
+                </Button>
+                {showTimerOptions && (
+                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-card rounded-xl shadow-card p-2 flex gap-1">
+                    {TIMER_OPTIONS.map((time) => (
+                      <button
+                        key={time}
+                        onClick={() => {
+                          setSelectedTimer(time);
+                          setShowTimerOptions(false);
+                        }}
+                        className={`w-10 h-10 rounded-lg font-bold text-sm transition-all ${
+                          selectedTimer === time
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-secondary hover:bg-secondary/80 text-foreground'
+                        }`}
+                      >
+                        {time === 0 ? '⚡' : `${time}s`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={handleCapture}
                 disabled={!isStreaming || isCapturing || photos.length >= MAX_PHOTOS}
@@ -168,6 +237,18 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
               >
                 <Camera className="w-8 h-8 text-primary-foreground" />
               </button>
+
+              {/* Flip camera */}
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={flipCamera}
+                disabled={isCapturing}
+                className="h-12 w-12"
+                title={facingMode === 'user' ? 'Switch to back camera' : 'Switch to front camera'}
+              >
+                <SwitchCamera className="w-5 h-5" />
+              </Button>
 
               <Button
                 variant="secondary"

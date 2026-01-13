@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Download, RotateCcw, Heart, Sparkles, Grid2X2, LayoutList, Film, Rows3 } from 'lucide-react';
+import { Download, RotateCcw, Heart, Sparkles, Grid2X2, LayoutList, Film, Rows3, Frame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Photo, FilterType, Sticker, TextOverlay } from '@/types/photobooth';
 
@@ -9,6 +9,7 @@ interface DownloadViewProps {
 }
 
 type LayoutType = 'vertical' | 'grid' | 'horizontal' | 'filmstrip';
+type FrameStyle = 'classic' | 'polaroid' | 'rounded' | 'vintage' | 'birthday' | 'wedding';
 
 interface LayoutOption {
   id: LayoutType;
@@ -17,11 +18,26 @@ interface LayoutOption {
   description: string;
 }
 
+interface FrameOption {
+  id: FrameStyle;
+  name: string;
+  emoji: string;
+}
+
 const LAYOUTS: LayoutOption[] = [
   { id: 'vertical', name: 'Classic Strip', icon: <LayoutList className="w-5 h-5" />, description: 'Traditional photo booth style' },
   { id: 'grid', name: '2×2 Grid', icon: <Grid2X2 className="w-5 h-5" />, description: 'Square collage layout' },
   { id: 'horizontal', name: 'Horizontal', icon: <Rows3 className="w-5 h-5 rotate-90" />, description: 'Side by side strip' },
   { id: 'filmstrip', name: 'Film Strip', icon: <Film className="w-5 h-5" />, description: 'Retro cinema style' },
+];
+
+const FRAMES: FrameOption[] = [
+  { id: 'classic', name: 'Classic', emoji: '🖼️' },
+  { id: 'polaroid', name: 'Polaroid', emoji: '📷' },
+  { id: 'rounded', name: 'Rounded', emoji: '⭕' },
+  { id: 'vintage', name: 'Vintage', emoji: '🎞️' },
+  { id: 'birthday', name: 'Birthday', emoji: '🎂' },
+  { id: 'wedding', name: 'Wedding', emoji: '💒' },
 ];
 
 const getFilterStyles = (filter: FilterType): string => {
@@ -38,6 +54,20 @@ const getFilterStyles = (filter: FilterType): string => {
       return 'saturate(80%) hue-rotate(10deg) brightness(105%)';
     case 'warm':
       return 'saturate(110%) sepia(15%) brightness(105%)';
+    case 'cyberpunk':
+      return 'contrast(130%) saturate(150%) hue-rotate(300deg) brightness(95%)';
+    case 'neon':
+      return 'contrast(120%) saturate(200%) brightness(110%) hue-rotate(330deg)';
+    case 'vaporwave':
+      return 'saturate(180%) hue-rotate(260deg) contrast(90%) brightness(110%)';
+    case 'noir':
+      return 'grayscale(100%) contrast(140%) brightness(90%)';
+    case 'dreamy':
+      return 'blur(0.5px) saturate(130%) brightness(115%) contrast(90%)';
+    case 'electric':
+      return 'saturate(250%) contrast(130%) hue-rotate(180deg) brightness(105%)';
+    case 'blur':
+      return 'blur(2px) brightness(105%)';
     default:
       return 'none';
   }
@@ -48,6 +78,27 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [stripDataUrl, setStripDataUrl] = useState<string | null>(null);
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>('vertical');
+  const [selectedFrame, setSelectedFrame] = useState<FrameStyle>('classic');
+
+  // Frame-specific styling
+  const getFrameConfig = () => {
+    switch (selectedFrame) {
+      case 'polaroid':
+        return { borderTop: 12, borderSide: 12, borderBottom: 45, cornerRadius: 0, bgColor: '#FAFAFA', accentColor: '#333333' };
+      case 'rounded':
+        return { borderTop: 10, borderSide: 10, borderBottom: 10, cornerRadius: 20, bgColor: '#FAF7F2', accentColor: '#E8837B' };
+      case 'vintage':
+        return { borderTop: 15, borderSide: 15, borderBottom: 15, cornerRadius: 0, bgColor: '#F5E6D3', accentColor: '#8B4513' };
+      case 'birthday':
+        return { borderTop: 12, borderSide: 12, borderBottom: 12, cornerRadius: 8, bgColor: '#FFF0F5', accentColor: '#FF69B4' };
+      case 'wedding':
+        return { borderTop: 14, borderSide: 14, borderBottom: 14, cornerRadius: 4, bgColor: '#FFFAF0', accentColor: '#D4AF37' };
+      default: // classic
+        return { borderTop: 8, borderSide: 8, borderBottom: 8, cornerRadius: 0, bgColor: '#FAF7F2', accentColor: '#E8837B' };
+    }
+  };
+
+  const frameConfig = getFrameConfig();
 
   useEffect(() => {
     const generatePhotoStrip = async () => {
@@ -157,17 +208,94 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         x: number,
         y: number,
         width: number,
-        height: number,
-        borderSize: number = 8
+        height: number
       ) => {
-        // White border
+        const { borderTop, borderSide, borderBottom, cornerRadius } = frameConfig;
+        const totalWidth = width + borderSide * 2;
+        const totalHeight = height + borderTop + borderBottom;
+        
+        ctx.save();
+        
+        // Draw white/cream border background
         ctx.fillStyle = '#FFFFFF';
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+        ctx.shadowBlur = 12;
         ctx.shadowOffsetY = 4;
-        ctx.fillRect(x - borderSize, y - borderSize, width + borderSize * 2, height + borderSize * 2);
+        
+        if (cornerRadius > 0) {
+          // Rounded rectangle
+          ctx.beginPath();
+          ctx.roundRect(x - borderSide, y - borderTop, totalWidth, totalHeight, cornerRadius);
+          ctx.fill();
+        } else {
+          ctx.fillRect(x - borderSide, y - borderTop, totalWidth, totalHeight);
+        }
+        
         ctx.shadowColor = 'transparent';
+        
+        // Draw the photo
+        if (cornerRadius > 0) {
+          // Clip to rounded rectangle for photo
+          ctx.beginPath();
+          ctx.roundRect(x, y, width, height, Math.max(0, cornerRadius - borderSide));
+          ctx.clip();
+        }
         ctx.drawImage(filteredCanvas, x, y);
+        ctx.restore();
+        
+        // Add decorative elements based on frame type
+        if (selectedFrame === 'vintage') {
+          // Corner decorations
+          ctx.strokeStyle = '#8B4513';
+          ctx.lineWidth = 2;
+          const cornerSize = 15;
+          // Top-left
+          ctx.beginPath();
+          ctx.moveTo(x - borderSide + 5, y - borderTop + cornerSize + 5);
+          ctx.lineTo(x - borderSide + 5, y - borderTop + 5);
+          ctx.lineTo(x - borderSide + cornerSize + 5, y - borderTop + 5);
+          ctx.stroke();
+          // Top-right
+          ctx.beginPath();
+          ctx.moveTo(x + width + borderSide - cornerSize - 5, y - borderTop + 5);
+          ctx.lineTo(x + width + borderSide - 5, y - borderTop + 5);
+          ctx.lineTo(x + width + borderSide - 5, y - borderTop + cornerSize + 5);
+          ctx.stroke();
+          // Bottom-left
+          ctx.beginPath();
+          ctx.moveTo(x - borderSide + 5, y + height + borderBottom - cornerSize - 5);
+          ctx.lineTo(x - borderSide + 5, y + height + borderBottom - 5);
+          ctx.lineTo(x - borderSide + cornerSize + 5, y + height + borderBottom - 5);
+          ctx.stroke();
+          // Bottom-right
+          ctx.beginPath();
+          ctx.moveTo(x + width + borderSide - cornerSize - 5, y + height + borderBottom - 5);
+          ctx.lineTo(x + width + borderSide - 5, y + height + borderBottom - 5);
+          ctx.lineTo(x + width + borderSide - 5, y + height + borderBottom - cornerSize - 5);
+          ctx.stroke();
+        }
+        
+        if (selectedFrame === 'wedding') {
+          // Elegant gold line
+          ctx.strokeStyle = '#D4AF37';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x - borderSide + 4, y - borderTop + 4, totalWidth - 8, totalHeight - 8);
+        }
+        
+        if (selectedFrame === 'birthday') {
+          // Confetti dots
+          const colors = ['#FF69B4', '#FFD700', '#00CED1', '#FF6347', '#9370DB'];
+          for (let i = 0; i < 8; i++) {
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.beginPath();
+            const dotX = x - borderSide + 6 + (i * (totalWidth - 12) / 7);
+            ctx.arc(dotX, y - borderTop + 6, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(dotX, y + height + borderBottom - 6, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
       };
 
       // Layout configurations
@@ -185,10 +313,10 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         canvas.width = totalWidth;
         canvas.height = totalHeight;
 
-        ctx.fillStyle = '#FAF7F2';
+        ctx.fillStyle = frameConfig.bgColor;
         ctx.fillRect(0, 0, totalWidth, totalHeight);
 
-        ctx.fillStyle = '#E8837B';
+        ctx.fillStyle = frameConfig.accentColor;
         ctx.font = 'bold 24px Poppins, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('✨ Photo Booth ✨', totalWidth / 2, stripPadding + 35);
@@ -204,11 +332,11 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        ctx.fillStyle = '#9CA3AF';
+        ctx.fillStyle = '#6B7280';
         ctx.font = '14px Quicksand, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(date, totalWidth / 2, totalHeight - stripPadding - 30);
-        ctx.fillStyle = '#E8837B';
+        ctx.fillStyle = frameConfig.accentColor;
         ctx.font = '18px sans-serif';
         ctx.fillText('♥', totalWidth / 2, totalHeight - stripPadding - 8);
 
@@ -225,14 +353,11 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         canvas.width = totalWidth;
         canvas.height = totalHeight;
 
-        // Gradient background
-        const gradient = ctx.createLinearGradient(0, 0, totalWidth, totalHeight);
-        gradient.addColorStop(0, '#FFF5F3');
-        gradient.addColorStop(1, '#F0FDF9');
-        ctx.fillStyle = gradient;
+        // Background with frame color
+        ctx.fillStyle = frameConfig.bgColor;
         ctx.fillRect(0, 0, totalWidth, totalHeight);
 
-        ctx.fillStyle = '#E8837B';
+        ctx.fillStyle = frameConfig.accentColor;
         ctx.font = 'bold 28px Poppins, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('📸 Memories', totalWidth / 2, stripPadding + 40);
@@ -248,13 +373,13 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           const [col, row] = positions[i];
           const x = stripPadding + col * (photoSize + padding);
           const y = headerHeight + stripPadding + row * (photoSize + padding);
-          drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoSize, photoSize, 10);
+          drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoSize, photoSize);
           drawStickers(ctx, photo.stickers, x, y, photoSize, photoSize);
           drawTextOverlays(ctx, photo.textOverlays, x, y, photoSize, photoSize);
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        ctx.fillStyle = '#9CA3AF';
+        ctx.fillStyle = '#6B7280';
         ctx.font = '16px Quicksand, sans-serif';
         ctx.fillText(date, totalWidth / 2, totalHeight - stripPadding - 15);
 
@@ -272,10 +397,10 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         canvas.width = totalWidth;
         canvas.height = totalHeight;
 
-        ctx.fillStyle = '#FAF7F2';
+        ctx.fillStyle = frameConfig.bgColor;
         ctx.fillRect(0, 0, totalWidth, totalHeight);
 
-        ctx.fillStyle = '#E8837B';
+        ctx.fillStyle = frameConfig.accentColor;
         ctx.font = 'bold 22px Poppins, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('✨ Photo Booth ✨', totalWidth / 2, stripPadding + 30);
@@ -291,7 +416,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         }
 
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        ctx.fillStyle = '#9CA3AF';
+        ctx.fillStyle = '#6B7280';
         ctx.font = '14px Quicksand, sans-serif';
         ctx.fillText(date + '  ♥', totalWidth / 2, totalHeight - stripPadding - 15);
 
@@ -336,13 +461,14 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
           
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(x - 4, y - 4, photoWidth + 8, photoHeight + 8);
+          
           ctx.drawImage(filteredCanvas, x, y);
           drawStickers(ctx, photo.stickers, x, y, photoWidth, photoHeight);
           drawTextOverlays(ctx, photo.textOverlays, x, y, photoWidth, photoHeight);
         }
 
         // Film text
-        ctx.fillStyle = '#E8837B';
+        ctx.fillStyle = frameConfig.accentColor;
         ctx.font = 'bold 14px monospace';
         ctx.textAlign = 'center';
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -354,7 +480,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
     };
 
     generatePhotoStrip();
-  }, [photos, selectedLayout]);
+  }, [photos, selectedLayout, selectedFrame]);
 
   const handleDownload = () => {
     if (!stripDataUrl) return;
@@ -389,7 +515,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
       </div>
 
       {/* Layout selector */}
-      <div className="flex flex-wrap justify-center gap-3 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <div className="flex flex-wrap justify-center gap-3 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
         {LAYOUTS.map((layout) => (
           <button
             key={layout.id}
@@ -411,9 +537,30 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         ))}
       </div>
 
+      {/* Frame style selector */}
+      <div className="flex flex-wrap justify-center gap-2 mb-8 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+        <span className="flex items-center gap-2 text-sm text-muted-foreground mr-2">
+          <Frame className="w-4 h-4" /> Border:
+        </span>
+        {FRAMES.map((frame) => (
+          <button
+            key={frame.id}
+            onClick={() => setSelectedFrame(frame.id)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-card hover:bg-secondary ${
+              selectedFrame === frame.id
+                ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105 bg-secondary'
+                : 'hover:scale-102'
+            }`}
+          >
+            <span className="mr-1.5">{frame.emoji}</span>
+            {frame.name}
+          </button>
+        ))}
+    </div>
+
       <div className="relative animate-fade-scale-in">
         {/* Photo strip display */}
-        <div className="photo-strip p-6 shadow-photo max-h-[55vh] overflow-auto">
+        <div className="photo-strip p-6 shadow-photo ">
           <canvas
             ref={canvasRef}
             className="max-w-full h-auto rounded-lg"

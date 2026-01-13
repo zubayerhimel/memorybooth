@@ -1,13 +1,17 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
+type FacingMode = 'user' | 'environment';
+
 interface UseCameraReturn {
   videoRef: React.RefObject<HTMLVideoElement>;
   canvasRef: React.RefObject<HTMLCanvasElement>;
   isStreaming: boolean;
   error: string | null;
+  facingMode: FacingMode;
   startCamera: () => Promise<void>;
   stopCamera: () => void;
   capturePhoto: () => string | null;
+  flipCamera: () => Promise<void>;
 }
 
 export const useCamera = (): UseCameraReturn => {
@@ -16,15 +20,21 @@ export const useCamera = (): UseCameraReturn => {
   const streamRef = useRef<MediaStream | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<FacingMode>('user');
 
-  const startCamera = useCallback(async () => {
+  const startCameraWithFacing = useCallback(async (facing: FacingMode) => {
     try {
       setError(null);
+      // Stop existing stream first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          facingMode: 'user',
+          facingMode: facing,
         },
         audio: false,
       });
@@ -40,6 +50,16 @@ export const useCamera = (): UseCameraReturn => {
       console.error('Camera access error:', err);
     }
   }, []);
+
+  const startCamera = useCallback(async () => {
+    await startCameraWithFacing(facingMode);
+  }, [startCameraWithFacing, facingMode]);
+
+  const flipCamera = useCallback(async () => {
+    const newFacing = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(newFacing);
+    await startCameraWithFacing(newFacing);
+  }, [facingMode, startCameraWithFacing]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -87,8 +107,10 @@ export const useCamera = (): UseCameraReturn => {
     canvasRef,
     isStreaming,
     error,
+    facingMode,
     startCamera,
     stopCamera,
     capturePhoto,
+    flipCamera,
   };
 };

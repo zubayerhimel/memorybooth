@@ -51,6 +51,13 @@ const FILTER_CLASSES: Record<FilterType, string> = {
   'pop-art': 'filter-pop-art',
   cool: 'filter-cool',
   warm: 'filter-warm',
+  cyberpunk: 'filter-cyberpunk',
+  neon: 'filter-neon',
+  vaporwave: 'filter-vaporwave',
+  noir: 'filter-noir',
+  dreamy: 'filter-dreamy',
+  electric: 'filter-electric',
+  blur: 'filter-blur',
 };
 
 const TEXT_COLORS = [
