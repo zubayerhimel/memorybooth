@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { LandingPage } from '@/components/LandingPage';
 import { CameraView } from '@/components/CameraView';
 import { FilterEditor } from '@/components/FilterEditor';
+import { StickerEditor } from '@/components/StickerEditor';
 import { DownloadView } from '@/components/DownloadView';
 import { Photo, AppStep } from '@/types/photobooth';
 
@@ -20,6 +21,11 @@ const Index = () => {
 
   const handleFiltersComplete = useCallback((editedPhotos: Photo[]) => {
     setPhotos(editedPhotos);
+    setCurrentStep('stickers');
+  }, []);
+
+  const handleStickersComplete = useCallback((stickerPhotos: Photo[]) => {
+    setPhotos(stickerPhotos);
     setCurrentStep('download');
   }, []);
 
@@ -31,6 +37,10 @@ const Index = () => {
   const handleBackToCamera = useCallback(() => {
     setPhotos([]);
     setCurrentStep('camera');
+  }, []);
+
+  const handleBackToFilters = useCallback(() => {
+    setCurrentStep('filters');
   }, []);
 
   return (
@@ -51,6 +61,14 @@ const Index = () => {
           photos={photos}
           onComplete={handleFiltersComplete}
           onBack={handleBackToCamera}
+        />
+      )}
+
+      {currentStep === 'stickers' && (
+        <StickerEditor
+          photos={photos}
+          onComplete={handleStickersComplete}
+          onBack={handleBackToFilters}
         />
       )}
       
