@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Download, RotateCcw, Heart, Sparkles } from 'lucide-react';
+import { Download, RotateCcw, Heart, Sparkles, Grid2X2, LayoutList, Film, Rows3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Photo, FilterType } from '@/types/photobooth';
 
@@ -7,6 +7,22 @@ interface DownloadViewProps {
   photos: Photo[];
   onStartOver: () => void;
 }
+
+type LayoutType = 'vertical' | 'grid' | 'horizontal' | 'filmstrip';
+
+interface LayoutOption {
+  id: LayoutType;
+  name: string;
+  icon: React.ReactNode;
+  description: string;
+}
+
+const LAYOUTS: LayoutOption[] = [
+  { id: 'vertical', name: 'Classic Strip', icon: <LayoutList className="w-5 h-5" />, description: 'Traditional photo booth style' },
+  { id: 'grid', name: '2×2 Grid', icon: <Grid2X2 className="w-5 h-5" />, description: 'Square collage layout' },
+  { id: 'horizontal', name: 'Horizontal', icon: <Rows3 className="w-5 h-5 rotate-90" />, description: 'Side by side strip' },
+  { id: 'filmstrip', name: 'Film Strip', icon: <Film className="w-5 h-5" />, description: 'Retro cinema style' },
+];
 
 const getFilterStyles = (filter: FilterType): string => {
   switch (filter) {
@@ -31,45 +47,17 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isGenerating, setIsGenerating] = useState(true);
   const [stripDataUrl, setStripDataUrl] = useState<string | null>(null);
+  const [selectedLayout, setSelectedLayout] = useState<LayoutType>('vertical');
 
   useEffect(() => {
     const generatePhotoStrip = async () => {
+      setIsGenerating(true);
       const canvas = canvasRef.current;
       if (!canvas) return;
 
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Photo strip dimensions
-      const photoWidth = 400;
-      const photoHeight = 300;
-      const padding = 20;
-      const stripPadding = 40;
-      const headerHeight = 60;
-      const footerHeight = 80;
-      
-      const totalWidth = photoWidth + stripPadding * 2;
-      const totalHeight = 
-        headerHeight + 
-        photos.length * photoHeight + 
-        (photos.length - 1) * padding + 
-        footerHeight + 
-        stripPadding * 2;
-
-      canvas.width = totalWidth;
-      canvas.height = totalHeight;
-
-      // Background - cream color like photo paper
-      ctx.fillStyle = '#FAF7F2';
-      ctx.fillRect(0, 0, totalWidth, totalHeight);
-
-      // Draw decorative header
-      ctx.fillStyle = '#E8837B';
-      ctx.font = 'bold 24px Poppins, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('✨ Photo Booth ✨', totalWidth / 2, stripPadding + 35);
-
-      // Load and draw each photo
       const loadImage = (dataUrl: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
           const img = new Image();
@@ -79,29 +67,23 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         });
       };
 
-      for (let i = 0; i < photos.length; i++) {
-        const photo = photos[i];
+      const applyFilterToCanvas = async (
+        photo: Photo,
+        width: number,
+        height: number
+      ): Promise<HTMLCanvasElement> => {
         const img = await loadImage(photo.dataUrl);
-
-        const x = stripPadding;
-        const y = headerHeight + stripPadding + i * (photoHeight + padding);
-
-        // Create a temporary canvas for the filter
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = photoWidth;
-        tempCanvas.height = photoHeight;
+        tempCanvas.width = width;
+        tempCanvas.height = height;
         const tempCtx = tempCanvas.getContext('2d');
-        
+
         if (tempCtx) {
-          // Apply filter
           tempCtx.filter = getFilterStyles(photo.filter);
-          
-          // Calculate crop to fit aspect ratio
           const imgAspect = img.width / img.height;
-          const targetAspect = photoWidth / photoHeight;
-          
+          const targetAspect = width / height;
           let sx = 0, sy = 0, sw = img.width, sh = img.height;
-          
+
           if (imgAspect > targetAspect) {
             sw = img.height * targetAspect;
             sx = (img.width - sw) / 2;
@@ -110,50 +92,214 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
             sy = (img.height - sh) / 2;
           }
 
-          tempCtx.drawImage(img, sx, sy, sw, sh, 0, 0, photoWidth, photoHeight);
-          
-          // Draw white border (Polaroid style)
-          ctx.fillStyle = '#FFFFFF';
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
-          ctx.fillRect(x - 8, y - 8, photoWidth + 16, photoHeight + 16);
-          ctx.shadowColor = 'transparent';
-          
-          // Draw the filtered photo
-          ctx.drawImage(tempCanvas, x, y);
+          tempCtx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
         }
-      }
+        return tempCanvas;
+      };
 
-      // Draw footer with date
-      const date = new Date().toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-      
-      ctx.fillStyle = '#9CA3AF';
-      ctx.font = '14px Quicksand, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(date, totalWidth / 2, totalHeight - stripPadding - 30);
-      
-      ctx.fillStyle = '#E8837B';
-      ctx.font = '18px sans-serif';
-      ctx.fillText('♥', totalWidth / 2, totalHeight - stripPadding - 8);
+      const drawPhotoWithBorder = (
+        ctx: CanvasRenderingContext2D,
+        filteredCanvas: HTMLCanvasElement,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        borderSize: number = 8
+      ) => {
+        // White border
+        ctx.fillStyle = '#FFFFFF';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 4;
+        ctx.fillRect(x - borderSize, y - borderSize, width + borderSize * 2, height + borderSize * 2);
+        ctx.shadowColor = 'transparent';
+        ctx.drawImage(filteredCanvas, x, y);
+      };
+
+      // Layout configurations
+      if (selectedLayout === 'vertical') {
+        const photoWidth = 400;
+        const photoHeight = 300;
+        const padding = 20;
+        const stripPadding = 40;
+        const headerHeight = 60;
+        const footerHeight = 80;
+
+        const totalWidth = photoWidth + stripPadding * 2;
+        const totalHeight = headerHeight + photos.length * photoHeight + (photos.length - 1) * padding + footerHeight + stripPadding * 2;
+
+        canvas.width = totalWidth;
+        canvas.height = totalHeight;
+
+        ctx.fillStyle = '#FAF7F2';
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+        ctx.fillStyle = '#E8837B';
+        ctx.font = 'bold 24px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✨ Photo Booth ✨', totalWidth / 2, stripPadding + 35);
+
+        for (let i = 0; i < photos.length; i++) {
+          const photo = photos[i];
+          const filteredCanvas = await applyFilterToCanvas(photo, photoWidth, photoHeight);
+          const x = stripPadding;
+          const y = headerHeight + stripPadding + i * (photoHeight + padding);
+          drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoWidth, photoHeight);
+        }
+
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        ctx.fillStyle = '#9CA3AF';
+        ctx.font = '14px Quicksand, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(date, totalWidth / 2, totalHeight - stripPadding - 30);
+        ctx.fillStyle = '#E8837B';
+        ctx.font = '18px sans-serif';
+        ctx.fillText('♥', totalWidth / 2, totalHeight - stripPadding - 8);
+
+      } else if (selectedLayout === 'grid') {
+        const photoSize = 350;
+        const padding = 20;
+        const stripPadding = 50;
+        const headerHeight = 70;
+        const footerHeight = 70;
+
+        const totalWidth = photoSize * 2 + padding + stripPadding * 2;
+        const totalHeight = headerHeight + photoSize * 2 + padding + footerHeight + stripPadding * 2;
+
+        canvas.width = totalWidth;
+        canvas.height = totalHeight;
+
+        // Gradient background
+        const gradient = ctx.createLinearGradient(0, 0, totalWidth, totalHeight);
+        gradient.addColorStop(0, '#FFF5F3');
+        gradient.addColorStop(1, '#F0FDF9');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+        ctx.fillStyle = '#E8837B';
+        ctx.font = 'bold 28px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('📸 Memories', totalWidth / 2, stripPadding + 40);
+
+        const positions = [
+          [0, 0], [1, 0],
+          [0, 1], [1, 1]
+        ];
+
+        for (let i = 0; i < Math.min(photos.length, 4); i++) {
+          const photo = photos[i];
+          const filteredCanvas = await applyFilterToCanvas(photo, photoSize, photoSize);
+          const [col, row] = positions[i];
+          const x = stripPadding + col * (photoSize + padding);
+          const y = headerHeight + stripPadding + row * (photoSize + padding);
+          drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoSize, photoSize, 10);
+        }
+
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        ctx.fillStyle = '#9CA3AF';
+        ctx.font = '16px Quicksand, sans-serif';
+        ctx.fillText(date, totalWidth / 2, totalHeight - stripPadding - 15);
+
+      } else if (selectedLayout === 'horizontal') {
+        const photoWidth = 300;
+        const photoHeight = 225;
+        const padding = 15;
+        const stripPadding = 40;
+        const headerHeight = 50;
+        const footerHeight = 60;
+
+        const totalWidth = photos.length * photoWidth + (photos.length - 1) * padding + stripPadding * 2;
+        const totalHeight = headerHeight + photoHeight + footerHeight + stripPadding * 2;
+
+        canvas.width = totalWidth;
+        canvas.height = totalHeight;
+
+        ctx.fillStyle = '#FAF7F2';
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+        ctx.fillStyle = '#E8837B';
+        ctx.font = 'bold 22px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✨ Photo Booth ✨', totalWidth / 2, stripPadding + 30);
+
+        for (let i = 0; i < photos.length; i++) {
+          const photo = photos[i];
+          const filteredCanvas = await applyFilterToCanvas(photo, photoWidth, photoHeight);
+          const x = stripPadding + i * (photoWidth + padding);
+          const y = headerHeight + stripPadding;
+          drawPhotoWithBorder(ctx, filteredCanvas, x, y, photoWidth, photoHeight);
+        }
+
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        ctx.fillStyle = '#9CA3AF';
+        ctx.font = '14px Quicksand, sans-serif';
+        ctx.fillText(date + '  ♥', totalWidth / 2, totalHeight - stripPadding - 15);
+
+      } else if (selectedLayout === 'filmstrip') {
+        const photoWidth = 350;
+        const photoHeight = 260;
+        const padding = 25;
+        const stripPadding = 30;
+        const sprocketHeight = 40;
+
+        const totalWidth = photoWidth + stripPadding * 2;
+        const totalHeight = sprocketHeight * 2 + photos.length * photoHeight + (photos.length - 1) * padding + stripPadding * 2;
+
+        canvas.width = totalWidth;
+        canvas.height = totalHeight;
+
+        // Film strip black background
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, totalWidth, totalHeight);
+
+        // Sprocket holes
+        const sprocketSize = 20;
+        const sprocketSpacing = 50;
+        ctx.fillStyle = '#FAF7F2';
+        
+        for (let y = sprocketHeight / 2; y < totalHeight; y += sprocketSpacing) {
+          // Left sprocket
+          ctx.beginPath();
+          ctx.roundRect(8, y - sprocketSize / 2, sprocketSize, sprocketSize, 3);
+          ctx.fill();
+          // Right sprocket
+          ctx.beginPath();
+          ctx.roundRect(totalWidth - 8 - sprocketSize, y - sprocketSize / 2, sprocketSize, sprocketSize, 3);
+          ctx.fill();
+        }
+
+        for (let i = 0; i < photos.length; i++) {
+          const photo = photos[i];
+          const filteredCanvas = await applyFilterToCanvas(photo, photoWidth, photoHeight);
+          const x = stripPadding;
+          const y = sprocketHeight + stripPadding + i * (photoHeight + padding);
+          
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(x - 4, y - 4, photoWidth + 8, photoHeight + 8);
+          ctx.drawImage(filteredCanvas, x, y);
+        }
+
+        // Film text
+        ctx.fillStyle = '#E8837B';
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center';
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        ctx.fillText(`PHOTO BOOTH • ${date}`, totalWidth / 2, totalHeight - sprocketHeight / 2 + 5);
+      }
 
       setStripDataUrl(canvas.toDataURL('image/png', 1.0));
       setIsGenerating(false);
     };
 
     generatePhotoStrip();
-  }, [photos]);
+  }, [photos, selectedLayout]);
 
   const handleDownload = () => {
     if (!stripDataUrl) return;
 
     const link = document.createElement('a');
     const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
-    link.download = `photo-booth-${timestamp}.png`;
+    link.download = `photo-booth-${selectedLayout}-${timestamp}.png`;
     link.href = stripDataUrl;
     link.click();
   };
@@ -171,24 +317,47 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         <Sparkles className="w-6 h-6 text-accent" />
       </div>
 
-      <div className="text-center mb-8 animate-slide-up">
+      <div className="text-center mb-6 animate-slide-up">
         <h2 className="font-display text-3xl font-bold text-foreground mb-2">
-          Your Photo Strip is Ready! 🎉
+          Choose Your Layout 🎨
         </h2>
         <p className="text-muted-foreground">
-          Download and share your memories
+          Pick a style and download your memories
         </p>
+      </div>
+
+      {/* Layout selector */}
+      <div className="flex flex-wrap justify-center gap-3 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        {LAYOUTS.map((layout) => (
+          <button
+            key={layout.id}
+            onClick={() => setSelectedLayout(layout.id)}
+            className={`flex items-center gap-3 px-5 py-3 rounded-2xl transition-all duration-200 ${
+              selectedLayout === layout.id
+                ? 'bg-primary text-primary-foreground shadow-button scale-105'
+                : 'bg-card text-foreground hover:bg-secondary shadow-soft hover:scale-102'
+            }`}
+          >
+            {layout.icon}
+            <div className="text-left">
+              <div className="font-semibold text-sm">{layout.name}</div>
+              <div className={`text-xs ${selectedLayout === layout.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+                {layout.description}
+              </div>
+            </div>
+          </button>
+        ))}
       </div>
 
       <div className="relative animate-fade-scale-in">
         {/* Photo strip display */}
-        <div className="photo-strip p-6 shadow-photo max-h-[70vh] overflow-hidden">
+        <div className="photo-strip p-6 shadow-photo max-h-[55vh] overflow-auto">
           <canvas
             ref={canvasRef}
             className="max-w-full h-auto rounded-lg"
-            style={{ maxHeight: '60vh' }}
+            style={{ maxHeight: '50vh' }}
           />
-          
+
           {isGenerating && (
             <div className="absolute inset-0 flex items-center justify-center bg-card/80 rounded-2xl">
               <div className="text-center">
