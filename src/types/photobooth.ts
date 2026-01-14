@@ -73,3 +73,14 @@ export interface GifExportOptions {
   loop: boolean;
   quality: number; // 1-20, lower is better quality
 }
+
+// Gallery History Types
+export interface GallerySession {
+  id: string;
+  timestamp: number;
+  thumbnailUrl: string; // The collage/strip image
+  gifUrl?: string; // Optional GIF version
+  layout: string;
+  template: string;
+  photoCount: number;
+}
