@@ -297,21 +297,21 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
   const selectedTextData = selectedPhoto.textOverlays.find((t) => t.id === selectedTextId);
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6">
       <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-6 animate-slide-up">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-1">
+        <div className="text-center mb-3 sm:mb-6 animate-slide-up">
+          <h2 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-0.5 sm:mb-1">
             Decorate Your Photos! 🎨
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs sm:text-base">
             Add stickers and text, then drag to position
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 items-start justify-center">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start justify-center">
           {/* Main photo with stickers */}
-          <div className="flex-1 max-w-lg animate-fade-scale-in">
+          <div className="flex-1 w-full max-w-lg mx-auto animate-fade-scale-in">
             <div className="photo-frame">
               <div
                 ref={photoContainerRef}
@@ -403,32 +403,32 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
             </div>
 
             {/* Photo navigation */}
-            <div className="flex justify-center items-center gap-2 mt-4">
+            <div className="flex justify-center items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4">
               <Button
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8"
+                className="h-7 w-7 sm:h-8 sm:w-8"
                 onClick={() => setSelectedPhotoIndex((prev) => Math.max(0, prev - 1))}
                 disabled={selectedPhotoIndex === 0}
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
-              <span className="bg-secondary/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+              <span className="bg-secondary/90 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
                 {selectedPhotoIndex + 1} / {editedPhotos.length}
               </span>
               <Button
                 variant="secondary"
                 size="icon"
-                className="h-8 w-8"
+                className="h-7 w-7 sm:h-8 sm:w-8"
                 onClick={() => setSelectedPhotoIndex((prev) => Math.min(editedPhotos.length - 1, prev + 1))}
                 disabled={selectedPhotoIndex === editedPhotos.length - 1}
               >
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
 
             {/* Thumbnail selector */}
-            <div className="flex justify-center gap-2 mt-3">
+            <div className="flex justify-center gap-1.5 sm:gap-2 mt-2 sm:mt-3">
               {editedPhotos.map((photo, index) => (
                 <button
                   key={photo.id}
@@ -436,7 +436,7 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                     setSelectedPhotoIndex(index);
                     clearSelection();
                   }}
-                  className={`relative w-16 h-12 rounded-lg overflow-hidden transition-all duration-200 ${
+                  className={`relative w-12 h-9 sm:w-16 sm:h-12 rounded-lg overflow-hidden transition-all duration-200 ${
                     index === selectedPhotoIndex
                       ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
                       : 'opacity-70 hover:opacity-100'
@@ -448,7 +448,7 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                     className={`w-full h-full object-cover ${FILTER_CLASSES[photo.filter]}`}
                   />
                   {(photo.stickers.length > 0 || photo.textOverlays.length > 0) && (
-                    <span className="absolute bottom-0 right-0 bg-primary text-primary-foreground text-xs px-1 rounded-tl">
+                    <span className="absolute bottom-0 right-0 bg-primary text-primary-foreground text-[10px] sm:text-xs px-0.5 sm:px-1 rounded-tl">
                       {photo.stickers.length + photo.textOverlays.length}
                     </span>
                   )}
@@ -458,7 +458,7 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
 
             {/* Decoration action buttons */}
             {hasDecorations && (
-              <div className="flex justify-center gap-2 mt-3 flex-wrap">
+              <div className="flex justify-center gap-2 mt-2 sm:mt-3 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"
@@ -473,9 +473,9 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                     setSelectedStickerId(null);
                     setSelectedTextId(null);
                   }}
-                  className="gap-2"
+                  className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                   Clear all
                 </Button>
                 {editedPhotos.length > 1 && (
@@ -483,9 +483,9 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                     variant="outline"
                     size="sm"
                     onClick={copyDecorationsToAll}
-                    className="gap-2"
+                    className="gap-1.5 sm:gap-2 text-xs sm:text-sm"
                   >
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-3 h-3 sm:w-4 sm:h-4" />
                     Copy to all
                   </Button>
                 )}
@@ -495,12 +495,12 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
 
           {/* Stickers & Text panel */}
           <div className="w-full lg:w-80 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="bg-card rounded-2xl p-5 shadow-card">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-card">
               {/* Tab switcher */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                 <button
                   onClick={() => setActiveTab('stickers')}
-                  className={`flex-1 py-2 px-3 rounded-xl font-medium text-sm transition-all ${
+                  className={`flex-1 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all ${
                     activeTab === 'stickers'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-foreground hover:bg-secondary/80'
@@ -510,13 +510,13 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                 </button>
                 <button
                   onClick={() => setActiveTab('text')}
-                  className={`flex-1 py-2 px-3 rounded-xl font-medium text-sm transition-all flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1 ${
                     activeTab === 'text'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-foreground hover:bg-secondary/80'
                   }`}
                 >
-                  <Type className="w-4 h-4" /> Text
+                  <Type className="w-3 h-3 sm:w-4 sm:h-4" /> Text
                 </button>
               </div>
 
@@ -592,12 +592,12 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                   )}
 
                   {/* Sticker grid */}
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-6 sm:grid-cols-5 gap-1.5 sm:gap-2">
                     {STICKER_OPTIONS.map((sticker) => (
                       <button
                         key={sticker.emoji}
                         onClick={() => addSticker(sticker.emoji)}
-                        className="aspect-square rounded-xl bg-secondary hover:bg-secondary/80 flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95"
+                        className="aspect-square rounded-lg sm:rounded-xl bg-secondary hover:bg-secondary/80 flex items-center justify-center text-xl sm:text-2xl transition-all hover:scale-110 active:scale-95"
                         title={sticker.name}
                       >
                         {sticker.emoji}
@@ -762,11 +762,11 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-3 mt-5">
-              <Button variant="secondary" className="flex-1" onClick={onBack}>
+            <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-5">
+              <Button variant="secondary" className="flex-1 text-sm sm:text-base" onClick={onBack}>
                 Back
               </Button>
-              <Button className="flex-1" onClick={() => onComplete(editedPhotos)}>
+              <Button className="flex-1 text-sm sm:text-base" onClick={() => onComplete(editedPhotos)}>
                 Continue
               </Button>
             </div>

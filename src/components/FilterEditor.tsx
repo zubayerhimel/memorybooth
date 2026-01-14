@@ -52,21 +52,21 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
   };
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6">
       <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-8 animate-slide-up">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-1">
+        <div className="text-center mb-4 sm:mb-8 animate-slide-up">
+          <h2 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-0.5 sm:mb-1">
             Add Some Magic ✨
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs sm:text-base">
             Choose filters for your photos
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 items-start justify-center">
           {/* Main photo preview */}
-          <div className="flex-1 max-w-lg animate-fade-scale-in">
+          <div className="flex-1 w-full max-w-lg mx-auto animate-fade-scale-in">
             <div className="photo-frame">
               <div className="relative rounded-lg overflow-hidden">
                 <img
@@ -76,39 +76,39 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
                 />
                 
                 {/* Photo navigation */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2">
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
                     onClick={() => setSelectedPhotoIndex((prev) => Math.max(0, prev - 1))}
                     disabled={selectedPhotoIndex === 0}
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <span className="bg-secondary/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                  <span className="bg-secondary/90 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
                     {selectedPhotoIndex + 1} / {editedPhotos.length}
                   </span>
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
                     onClick={() => setSelectedPhotoIndex((prev) => Math.min(editedPhotos.length - 1, prev + 1))}
                     disabled={selectedPhotoIndex === editedPhotos.length - 1}
                   >
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
               </div>
             </div>
 
             {/* Thumbnail selector */}
-            <div className="flex justify-center gap-2 mt-4">
+            <div className="flex justify-center gap-1.5 sm:gap-2 mt-3 sm:mt-4">
               {editedPhotos.map((photo, index) => (
                 <button
                   key={photo.id}
                   onClick={() => setSelectedPhotoIndex(index)}
-                  className={`w-16 h-12 rounded-lg overflow-hidden transition-all duration-200 ${
+                  className={`w-12 h-9 sm:w-16 sm:h-12 rounded-lg overflow-hidden transition-all duration-200 ${
                     index === selectedPhotoIndex
                       ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
                       : 'opacity-70 hover:opacity-100'
@@ -126,8 +126,8 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
 
           {/* Filters panel */}
           <div className="w-full lg:w-72 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="bg-card rounded-2xl p-6 shadow-card">
-              <h3 className="font-display font-semibold text-lg mb-4">Filters</h3>
+            <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-card">
+              <h3 className="font-display font-semibold text-base sm:text-lg mb-3 sm:mb-4">Filters</h3>
 
               {/* Apply to all toggle */}
               <button 
@@ -148,7 +148,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
               </button>
 
               {/* Filter options */}
-              <div className="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1">
+              <div className="grid grid-cols-3 sm:grid-cols-2 gap-1.5 sm:gap-2 max-h-[35vh] sm:max-h-[50vh] overflow-y-auto pr-1">
                 {FILTERS.map((filter) => (
                   <button
                     key={filter.id}
@@ -178,17 +178,17 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-3 mt-6">
-              <Button variant="secondary" className="flex-1" onClick={onBack}>
+            <div className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+              <Button variant="secondary" className="flex-1 text-sm sm:text-base" onClick={onBack}>
                 Back
               </Button>
-              <Button className="flex-1" onClick={() => onComplete(editedPhotos)}>
+              <Button className="flex-1 text-sm sm:text-base" onClick={() => onComplete(editedPhotos)}>
                 Continue
               </Button>
             </div>
           </div>
 
-          {/* Photo strip preview */}
+          {/* Photo strip preview - hide on mobile */}
           <div className="photo-strip w-32 hidden lg:block animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <div className="flex flex-col gap-2">
               {editedPhotos.map((photo, index) => (

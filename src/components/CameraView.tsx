@@ -112,24 +112,24 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
   const remainingPhotos = MAX_PHOTOS - photos.length;
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6">
       <div className="w-full max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-6 animate-slide-up">
-          <h2 className="font-display text-2xl font-bold text-foreground mb-1">
+        <div className="text-center mb-3 sm:mb-6 animate-slide-up">
+          <h2 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-0.5 sm:mb-1">
             {photos.length === 0 ? "Strike a Pose!" : `${remainingPhotos} photo${remainingPhotos !== 1 ? 's' : ''} left`}
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-xs sm:text-base">
             {photos.length === 0 
               ? "Click the shutter to start capturing" 
               : "Keep going! Show us your best angles"}
           </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 items-center justify-center">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center justify-center">
           {/* Camera body */}
-          <div className="camera-body p-4 animate-fade-scale-in">
-            <div className="relative rounded-2xl overflow-hidden bg-foreground/10">
+          <div className="camera-body p-2 sm:p-4 animate-fade-scale-in w-full max-w-md lg:max-w-none">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-foreground/10">
               {/* Video feed */}
               <video
                 ref={videoRef}
@@ -152,7 +152,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 <div className="absolute inset-0 flex items-center justify-center bg-foreground/40">
                   <span 
                     key={countdown}
-                    className="font-display text-9xl font-bold text-white drop-shadow-lg"
+                    className="font-display text-7xl sm:text-9xl font-bold text-white drop-shadow-lg"
                     style={{
                       animation: 'countdown-number 1s ease-out forwards',
                       textShadow: '0 4px 20px rgba(0,0,0,0.4)'
@@ -184,14 +184,14 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-center gap-4 mt-6">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
               <Button
                 variant="secondary"
                 size="icon"
                 onClick={onBack}
-                className="h-12 w-12"
+                className="h-10 w-10 sm:h-12 sm:w-12"
               >
-                <RotateCcw className="w-5 h-5" />
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
 
               {/* Timer selector */}
@@ -200,7 +200,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                   variant="secondary"
                   size="icon"
                   onClick={() => setShowTimerOptions(!showTimerOptions)}
-                  className="h-12 w-12"
+                  className="h-10 w-10 sm:h-12 sm:w-12"
                   disabled={isCapturing}
                 >
                   <Timer className="w-5 h-5" />
@@ -233,9 +233,9 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
               <button
                 onClick={handleCapture}
                 disabled={!isStreaming || isCapturing || photos.length >= MAX_PHOTOS}
-                className="shutter-button disabled:opacity-50 disabled:cursor-not-allowed"
+                className="shutter-button w-14 h-14 sm:w-20 sm:h-20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Camera className="w-8 h-8 text-primary-foreground" />
+                <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-primary-foreground" />
               </button>
 
               {/* Flip camera */}
@@ -244,10 +244,10 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 size="icon"
                 onClick={flipCamera}
                 disabled={isCapturing}
-                className="h-12 w-12"
+                className="h-10 w-10 sm:h-12 sm:w-12"
                 title={facingMode === 'user' ? 'Switch to back camera' : 'Switch to front camera'}
               >
-                <SwitchCamera className="w-5 h-5" />
+                <SwitchCamera className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
 
               <Button
@@ -255,20 +255,20 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 size="icon"
                 onClick={handleRetake}
                 disabled={photos.length === 0}
-                className="h-12 w-12"
+                className="h-10 w-10 sm:h-12 sm:w-12"
               >
-                <RotateCcw className="w-5 h-5" />
+                <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </div>
           </div>
 
           {/* Photo strip preview */}
-          <div className="photo-strip w-40 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="flex flex-col gap-2">
+          <div className="photo-strip w-full sm:w-40 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <div className="flex flex-row sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
               {[...Array(MAX_PHOTOS)].map((_, index) => (
                 <div
                   key={index}
-                  className={`aspect-[4/3] rounded-lg overflow-hidden transition-all duration-300 ${
+                  className={`flex-shrink-0 w-20 h-16 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-lg overflow-hidden transition-all duration-300 ${
                     photos[index] 
                       ? 'shadow-soft' 
                       : 'bg-muted border-2 border-dashed border-border'
@@ -290,7 +290,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 </div>
               ))}
             </div>
-            <div className="mt-3 text-center">
+            <div className="mt-2 sm:mt-3 text-center">
               <p className="text-xs text-muted-foreground font-medium">Photo Strip</p>
             </div>
           </div>

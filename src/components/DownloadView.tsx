@@ -493,78 +493,79 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-center p-6">
-      {/* Decorative elements */}
-      <div className="absolute top-16 left-16 animate-bounce-soft">
+    <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6 overflow-hidden">
+      {/* Decorative elements - hidden on small screens */}
+      <div className="hidden sm:block absolute top-16 left-16 animate-bounce-soft">
         <Heart className="w-8 h-8 text-primary fill-primary" />
       </div>
-      <div className="absolute top-24 right-24 animate-bounce-soft" style={{ animationDelay: '0.3s' }}>
+      <div className="hidden sm:block absolute top-24 right-24 animate-bounce-soft" style={{ animationDelay: '0.3s' }}>
         <Sparkles className="w-10 h-10 text-yellow" />
       </div>
-      <div className="absolute bottom-20 left-24 animate-bounce-soft" style={{ animationDelay: '0.6s' }}>
+      <div className="hidden sm:block absolute bottom-20 left-24 animate-bounce-soft" style={{ animationDelay: '0.6s' }}>
         <Sparkles className="w-6 h-6 text-accent" />
       </div>
 
-      <div className="text-center mb-6 animate-slide-up">
-        <h2 className="font-display text-3xl font-bold text-foreground mb-2">
+      <div className="text-center mb-4 sm:mb-6 animate-slide-up">
+        <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
           Choose Your Layout 🎨
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-xs sm:text-base">
           Pick a style and download your memories
         </p>
       </div>
 
       {/* Layout selector */}
-      <div className="flex flex-wrap justify-center gap-3 mb-4 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 animate-slide-up px-1" style={{ animationDelay: '0.1s' }}>
         {LAYOUTS.map((layout) => (
           <button
             key={layout.id}
             onClick={() => setSelectedLayout(layout.id)}
-            className={`flex items-center gap-3 px-5 py-3 rounded-2xl transition-all duration-200 ${
+            className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl transition-all duration-200 ${
               selectedLayout === layout.id
                 ? 'bg-primary text-primary-foreground shadow-button scale-105'
                 : 'bg-card text-foreground hover:bg-secondary shadow-soft hover:scale-102'
             }`}
           >
             {layout.icon}
-            <div className="text-left">
+            <div className="text-left hidden sm:block">
               <div className="font-semibold text-sm">{layout.name}</div>
               <div className={`text-xs ${selectedLayout === layout.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                 {layout.description}
               </div>
             </div>
+            <span className="sm:hidden text-xs font-medium">{layout.name}</span>
           </button>
         ))}
       </div>
 
       {/* Frame style selector */}
-      <div className="flex flex-wrap justify-center gap-2 mb-8 animate-slide-up" style={{ animationDelay: '0.15s' }}>
-        <span className="flex items-center gap-2 text-sm text-muted-foreground mr-2">
+      <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-8 animate-slide-up px-1" style={{ animationDelay: '0.15s' }}>
+        <span className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground mr-2">
           <Frame className="w-4 h-4" /> Border:
         </span>
         {FRAMES.map((frame) => (
           <button
             key={frame.id}
             onClick={() => setSelectedFrame(frame.id)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 bg-card hover:bg-secondary ${
+            className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 bg-card hover:bg-secondary ${
               selectedFrame === frame.id
                 ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105 bg-secondary'
                 : 'hover:scale-102'
             }`}
           >
-            <span className="mr-1.5">{frame.emoji}</span>
-            {frame.name}
+            <span className="mr-0.5 sm:mr-1.5">{frame.emoji}</span>
+            <span className="hidden sm:inline">{frame.name}</span>
           </button>
         ))}
     </div>
 
-      <div className="relative animate-fade-scale-in">
+      <div className="relative animate-fade-scale-in ">
         {/* Photo strip display */}
-        <div className="photo-strip p-6 shadow-photo ">
+        <div className="photo-strip p-3 sm:p-6 shadow-photo">
           <canvas
             ref={canvasRef}
-            className="max-w-full h-auto rounded-lg"
-            style={{ maxHeight: '50vh' }}
+            className="max-w-full h-auto rounded-lg mx-auto"
+            style={{ maxHeight: '40vh' }}
           />
 
           {isGenerating && (
@@ -578,32 +579,32 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
         </div>
 
         {/* Decorative tape */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-yellow/80 rotate-2 rounded-sm" />
+        <div className="absolute -top-2 sm:-top-3 left-1/2 -translate-x-1/2 w-12 sm:w-16 h-4 sm:h-6 bg-yellow/80 rotate-2 rounded-sm" />
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-4 mt-8 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6 sm:mt-8 animate-slide-up w-full max-w-md sm:max-w-none sm:w-auto" style={{ animationDelay: '0.3s' }}>
         <Button
           variant="secondary"
           size="lg"
           onClick={onStartOver}
-          className="font-display"
+          className="font-display w-full sm:w-auto text-sm sm:text-base"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
           Take New Photos
         </Button>
         <Button
           size="lg"
           onClick={handleDownload}
           disabled={isGenerating}
-          className="font-display"
+          className="font-display w-full sm:w-auto text-sm sm:text-base"
         >
-          <Download className="w-5 h-5" />
+          <Download className="w-4 h-4 sm:w-5 sm:h-5" />
           Download Strip
         </Button>
       </div>
 
-      <p className="mt-6 text-xs text-muted-foreground animate-slide-up" style={{ animationDelay: '0.5s' }}>
+      <p className="mt-4 sm:mt-6 text-xs text-muted-foreground animate-slide-up text-center" style={{ animationDelay: '0.5s' }}>
         High-quality PNG • Ready for printing or sharing
       </p>
     </div>
