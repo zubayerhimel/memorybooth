@@ -20,6 +20,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [selectedTimer, setSelectedTimer] = useState(3);
   const [showTimerOptions, setShowTimerOptions] = useState(false);
+  const [ejectingPhoto, setEjectingPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     startCamera();
@@ -43,6 +44,10 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
       const dataUrl = capturePhoto();
       
       if (dataUrl) {
+        // Show ejecting photo animation
+        setEjectingPhoto(dataUrl);
+        setTimeout(() => setEjectingPhoto(null), 1200);
+        
         const newPhoto: Photo = {
           id: crypto.randomUUID(),
           dataUrl,
@@ -55,7 +60,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
         setPhotos((prev) => {
           const updated = [...prev, newPhoto];
           if (updated.length >= MAX_PHOTOS) {
-            setTimeout(() => onPhotosComplete(updated), 500);
+            setTimeout(() => onPhotosComplete(updated), 800);
           }
           return updated;
         });
@@ -82,6 +87,10 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
         const dataUrl = capturePhoto();
         
         if (dataUrl) {
+          // Show ejecting photo animation
+          setEjectingPhoto(dataUrl);
+          setTimeout(() => setEjectingPhoto(null), 1200);
+          
           const newPhoto: Photo = {
             id: crypto.randomUUID(),
             dataUrl,
@@ -94,7 +103,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
           setPhotos((prev) => {
             const updated = [...prev, newPhoto];
             if (updated.length >= MAX_PHOTOS) {
-              setTimeout(() => onPhotosComplete(updated), 500);
+              setTimeout(() => onPhotosComplete(updated), 800);
             }
             return updated;
           });
@@ -128,7 +137,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-center justify-center">
           {/* Camera body */}
-          <div className="camera-body p-2 sm:p-4 animate-fade-scale-in w-full max-w-md lg:max-w-none">
+          <div className="camera-body p-2 sm:p-4 animate-fade-scale-in w-full max-w-md lg:max-w-none relative">
             <div className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-foreground/10">
               {/* Video feed */}
               <video
@@ -136,7 +145,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-auto max-w-lg aspect-[4/3] object-cover transform scale-x-[-1]"
+                className="w-full h-auto aspect-[4/3] object-cover transform scale-x-[-1]"
               />
               
               {/* Hidden canvas for capture */}
@@ -182,6 +191,22 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
                 </div>
               )}
             </div>
+
+            {/* Ejecting Photo Animation */}
+            {ejectingPhoto && (
+              <div className="absolute -bottom-4 right-0 sm:-right-2 z-20 animate-photo-eject-right">
+                <div className="w-20 h-24 sm:w-28 sm:h-32 bg-white rounded-sm shadow-photo p-1.5 sm:p-2 rotate-[6deg]">
+                  <img 
+                    src={ejectingPhoto} 
+                    alt="Captured" 
+                    className="w-full h-[75%] object-cover rounded-sm transform scale-x-[-1]"
+                  />
+                  <div className="h-[25%] flex items-center justify-center">
+                    <span className="text-[8px] sm:text-[10px] text-foreground/40 font-medium">just now ✨</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Controls */}
             <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
