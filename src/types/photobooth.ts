@@ -41,3 +41,35 @@ export interface StickerOption {
 }
 
 export type AppStep = 'landing' | 'camera' | 'filters' | 'stickers' | 'download';
+
+// Collage Template Types
+export type TemplateTheme = 'none' | 'birthday' | 'wedding' | 'graduation' | 'christmas' | 'halloween' | 'valentines' | 'newyear';
+
+export interface TemplateConfig {
+  id: TemplateTheme;
+  name: string;
+  emoji: string;
+  bgColor: string;
+  accentColor: string;
+  secondaryColor: string;
+  headerText: string;
+  footerText: string;
+  decorations: TemplateDecoration[];
+  borderStyle: 'solid' | 'dashed' | 'double' | 'none';
+  font: string;
+}
+
+export interface TemplateDecoration {
+  emoji: string;
+  positions: { x: number; y: number; size: number; rotation?: number }[];
+}
+
+// GIF Export Types
+export type GifTransition = 'none' | 'fade' | 'slide' | 'zoom' | 'bounce';
+
+export interface GifExportOptions {
+  delay: number; // delay between frames in ms
+  transition: GifTransition;
+  loop: boolean;
+  quality: number; // 1-20, lower is better quality
+}

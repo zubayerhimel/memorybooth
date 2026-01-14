@@ -194,7 +194,7 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
 
             {/* Ejecting Photo Animation */}
             {ejectingPhoto && (
-              <div className="absolute -bottom-4 right-0 sm:-right-2 z-20 animate-photo-eject-right">
+              <div className="absolute bottom-8 right-0 sm:right-2 z-20 animate-photo-eject-right">
                 <div className="w-20 h-24 sm:w-28 sm:h-32 bg-white rounded-sm shadow-photo p-1.5 sm:p-2 rotate-[6deg]">
                   <img 
                     src={ejectingPhoto} 
