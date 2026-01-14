@@ -1,9 +1,8 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Trash2, RotateCw, Plus, Minus, Type, Copy, Undo2, Redo2 } from 'lucide-react';
+import { useState, useRef, useCallback } from 'react';
+import { ArrowLeft, ArrowRight, Trash2, RotateCw, Plus, Minus, Type, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Photo, Sticker, StickerOption, FilterType, TextOverlay } from '@/types/photobooth';
-import { useUndoRedo } from '@/hooks/useUndoRedo';
 
 interface StickerEditorProps {
   photos: Photo[];
@@ -82,14 +81,7 @@ const FONT_OPTIONS = [
 type ActiveTab = 'stickers' | 'text';
 
 export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps) => {
-  const { 
-    state: editedPhotos, 
-    setState: setEditedPhotos, 
-    undo, 
-    redo, 
-    canUndo, 
-    canRedo 
-  } = useUndoRedo<Photo[]>(photos);
+  const [editedPhotos, setEditedPhotos] = useState<Photo[]>(photos);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null);
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
@@ -99,27 +91,6 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
   const photoContainerRef = useRef<HTMLDivElement>(null);
 
   const selectedPhoto = editedPhotos[selectedPhotoIndex];
-
-  // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
-        e.preventDefault();
-        if (e.shiftKey) {
-          if (canRedo) redo();
-        } else {
-          if (canUndo) undo();
-        }
-      }
-      if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
-        e.preventDefault();
-        if (canRedo) redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, canUndo, canRedo]);
 
   const generateStickerId = () => `sticker-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   const generateTextId = () => `text-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -336,29 +307,6 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
           <p className="text-muted-foreground">
             Add stickers and text, then drag to position
           </p>
-          {/* Undo/Redo buttons */}
-          <div className="flex justify-center gap-2 mt-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={undo}
-              disabled={!canUndo}
-              className="gap-1"
-            >
-              <Undo2 className="w-4 h-4" />
-              Undo
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={redo}
-              disabled={!canRedo}
-              className="gap-1"
-            >
-              <Redo2 className="w-4 h-4" />
-              Redo
-            </Button>
-          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6 items-start justify-center">
