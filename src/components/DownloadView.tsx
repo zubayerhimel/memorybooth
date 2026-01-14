@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Download, RotateCcw, Heart, Sparkles, Grid2X2, LayoutList, Film, Rows3, Frame, Play, Settings2, Palette } from 'lucide-react';
+import { Download, RotateCcw, Grid2X2, LayoutList, Film, Rows3, Play, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Photo, FilterType, Sticker, TextOverlay, TemplateTheme, TemplateConfig, GifTransition } from '@/types/photobooth';
 import GIF from 'gif.js';
@@ -1029,346 +1029,312 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
   };
 
   return (
-    <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6 overflow-hidden">
-      {/* Decorative elements - hidden on small screens */}
-      <div className="hidden sm:block absolute top-16 left-16 animate-bounce-soft">
-        <Heart className="w-8 h-8 text-primary fill-primary" />
-      </div>
-      <div className="hidden sm:block absolute top-24 right-24 animate-bounce-soft" style={{ animationDelay: '0.3s' }}>
-        <Sparkles className="w-10 h-10 text-yellow" />
-      </div>
-      <div className="hidden sm:block absolute bottom-20 left-24 animate-bounce-soft" style={{ animationDelay: '0.6s' }}>
-        <Sparkles className="w-6 h-6 text-accent" />
-      </div>
-
+    <div className="min-h-screen gradient-hero flex flex-col items-center p-3 sm:p-6 pt-4 sm:pt-6 overflow-auto">
+      {/* Header */}
       <div className="text-center mb-4 sm:mb-6 animate-slide-up">
-        <h2 className="font-display text-xl sm:text-3xl font-bold text-foreground mb-1 sm:mb-2">
-          Customize & Download 🎨
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground mb-1">
+          Your Photos Are Ready! ✨
         </h2>
-        <p className="text-muted-foreground text-xs sm:text-base">
-          Pick a layout, add a theme, or create an animated GIF!
+        <p className="text-muted-foreground text-xs sm:text-sm">
+          Customize your layout and download
         </p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex justify-center gap-2 mb-4 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        <button
-          onClick={() => setActiveTab('layout')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-            activeTab === 'layout'
-              ? 'bg-primary text-primary-foreground shadow-button'
-              : 'bg-card text-foreground hover:bg-secondary'
-          }`}
-        >
-          <LayoutList className="w-4 h-4" />
-          <span className="hidden sm:inline">Layout</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('template')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-            activeTab === 'template'
-              ? 'bg-primary text-primary-foreground shadow-button'
-              : 'bg-card text-foreground hover:bg-secondary'
-          }`}
-        >
-          <Palette className="w-4 h-4" />
-          <span className="hidden sm:inline">Templates</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('gif')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-            activeTab === 'gif'
-              ? 'bg-primary text-primary-foreground shadow-button'
-              : 'bg-card text-foreground hover:bg-secondary'
-          }`}
-        >
-          <Play className="w-4 h-4" />
-          <span className="hidden sm:inline">Animated GIF</span>
-        </button>
-      </div>
+      {/* Main Content - Two Column Layout */}
+      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 lg:gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        
+        {/* Left Side - Photo Preview */}
+        <div className="lg:w-1/2 flex flex-col items-center">
+          <div className="relative w-full flex justify-center">
+            <div className="photo-strip p-3 sm:p-4 shadow-photo inline-block">
+              <canvas
+                ref={canvasRef}
+                className="max-w-full h-auto rounded-lg mx-auto"
+                style={{ maxHeight: '55vh' }}
+              />
 
-      {/* Layout Tab Content */}
-      {activeTab === 'layout' && (
-        <>
-          {/* Layout selector */}
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 animate-slide-up px-1" style={{ animationDelay: '0.1s' }}>
-            {LAYOUTS.map((layout) => (
-              <button
-                key={layout.id}
-                onClick={() => setSelectedLayout(layout.id)}
-                className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-5 py-2 sm:py-3 rounded-xl sm:rounded-2xl transition-all duration-200 ${
-                  selectedLayout === layout.id
-                    ? 'bg-primary text-primary-foreground shadow-button scale-105'
-                    : 'bg-card text-foreground hover:bg-secondary shadow-soft hover:scale-102'
-                }`}
-              >
-                {layout.icon}
-                <div className="text-left hidden sm:block">
-                  <div className="font-semibold text-sm">{layout.name}</div>
-                  <div className={`text-xs ${selectedLayout === layout.id ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
-                    {layout.description}
+              {isGenerating && (
+                <div className="absolute inset-0 flex items-center justify-center bg-card/80 rounded-2xl">
+                  <div className="text-center">
+                    <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                    <p className="font-medium text-foreground text-sm">Creating...</p>
                   </div>
                 </div>
-                <span className="sm:hidden text-xs font-medium">{layout.name}</span>
-              </button>
-            ))}
+              )}
+            </div>
+            {/* Decorative tape */}
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 sm:w-14 h-3 sm:h-5 bg-yellow/80 rotate-2 rounded-sm" />
           </div>
 
-          {/* Frame style selector */}
-          <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-6 animate-slide-up px-1" style={{ animationDelay: '0.15s' }}>
-            <span className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground mr-2">
-              <Frame className="w-4 h-4" /> Border:
-            </span>
-            {FRAMES.map((frame) => (
+          {/* Download Buttons - Below Preview */}
+          <div className="flex gap-3 mt-4 w-full max-w-xs">
+            <Button
+              variant="secondary"
+              size="default"
+              onClick={onStartOver}
+              className="flex-1 text-sm"
+            >
+              <RotateCcw className="w-4 h-4 mr-1.5" />
+              Retake
+            </Button>
+            <Button
+              size="default"
+              onClick={handleDownload}
+              disabled={isGenerating}
+              className="flex-1 text-sm"
+            >
+              <Download className="w-4 h-4 mr-1.5" />
+              Download
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Side - Controls Panel */}
+        <div className="lg:w-1/2">
+          <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+            {/* Tab Navigation */}
+            <div className="flex border-b border-border">
               <button
-                key={frame.id}
-                onClick={() => setSelectedFrame(frame.id)}
-                className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 bg-card hover:bg-secondary ${
-                  selectedFrame === frame.id
-                    ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105 bg-secondary'
-                    : 'hover:scale-102'
+                onClick={() => setActiveTab('layout')}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium transition-all ${
+                  activeTab === 'layout'
+                    ? 'bg-primary/10 text-primary border-b-2 border-primary'
+                    : 'text-muted-foreground hover:bg-secondary/50'
                 }`}
               >
-                <span className="mr-0.5 sm:mr-1.5">{frame.emoji}</span>
-                <span className="hidden sm:inline">{frame.name}</span>
+                <LayoutList className="w-4 h-4" />
+                <span>Layout</span>
               </button>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Template Tab Content */}
-      {activeTab === 'template' && (
-        <div className="w-full max-w-2xl animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-card mb-4">
-            <h3 className="font-display font-semibold text-base sm:text-lg mb-3 flex items-center gap-2">
-              <Palette className="w-5 h-5" />
-              Themed Templates
-            </h3>
-            <p className="text-muted-foreground text-xs sm:text-sm mb-4">
-              Add themed decorations and text to your photo strip
-            </p>
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-              {TEMPLATES.map((template) => (
-                <button
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template.id)}
-                  className={`flex flex-col items-center gap-1 p-2 sm:p-3 rounded-xl transition-all ${
-                    selectedTemplate === template.id
-                      ? 'bg-primary text-primary-foreground shadow-button scale-105'
-                      : 'bg-secondary hover:bg-secondary/80'
-                  }`}
-                >
-                  <span className="text-xl sm:text-2xl">{template.emoji}</span>
-                  <span className="text-[10px] sm:text-xs font-medium truncate w-full text-center">{template.name}</span>
-                </button>
-              ))}
-            </div>
-            
-            {/* Custom Header & Footer Text */}
-            <div className="mt-4 p-4 rounded-lg bg-secondary/50 border border-border">
-              <h4 className="text-sm font-semibold mb-3">✏️ Custom Messages</h4>
-              
-              {/* Custom Header */}
-              <div className="mb-3">
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                  Header Text ({customHeaderText.length}/{HEADER_MAX_CHARS})
-                </label>
-                <input
-                  type="text"
-                  value={customHeaderText}
-                  onChange={(e) => setCustomHeaderText(e.target.value.slice(0, HEADER_MAX_CHARS))}
-                  placeholder={selectedTemplate !== 'none' ? templateConfig.headerText : '✨ Photo Booth ✨'}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  maxLength={HEADER_MAX_CHARS}
-                />
-              </div>
-              
-              {/* Custom Footer */}
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                  Footer Text ({customFooterText.length}/{FOOTER_MAX_CHARS})
-                </label>
-                <input
-                  type="text"
-                  value={customFooterText}
-                  onChange={(e) => setCustomFooterText(e.target.value.slice(0, FOOTER_MAX_CHARS))}
-                  placeholder={selectedTemplate !== 'none' && templateConfig.footerText ? templateConfig.footerText : 'Add a message...'}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  maxLength={FOOTER_MAX_CHARS}
-                />
-              </div>
-              
-              {(customHeaderText || customFooterText) && (
-                <button
-                  onClick={() => { 
-                    setCustomHeaderText(''); 
-                    setCustomFooterText(''); 
-                    setDebouncedHeaderText('');
-                    setDebouncedFooterText('');
-                  }}
-                  className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ↩ Reset to default
-                </button>
-              )}
+              <button
+                onClick={() => setActiveTab('template')}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium transition-all ${
+                  activeTab === 'template'
+                    ? 'bg-primary/10 text-primary border-b-2 border-primary'
+                    : 'text-muted-foreground hover:bg-secondary/50'
+                }`}
+              >
+                <Palette className="w-4 h-4" />
+                <span>Theme</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('gif')}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium transition-all ${
+                  activeTab === 'gif'
+                    ? 'bg-primary/10 text-primary border-b-2 border-primary'
+                    : 'text-muted-foreground hover:bg-secondary/50'
+                }`}
+              >
+                <Play className="w-4 h-4" />
+                <span>GIF</span>
+              </button>
             </div>
 
-            {selectedTemplate !== 'none' && (
-              <div className="mt-3 p-3 rounded-lg bg-primary/10 border border-primary/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{templateConfig.emoji}</span>
-                  <span className="font-semibold text-sm">{templateConfig.name} Theme Active</span>
+            {/* Tab Content */}
+            <div className="p-4">
+              {/* Layout Tab */}
+              {activeTab === 'layout' && (
+                <div className="space-y-4">
+                  {/* Layout Options */}
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-2 block">Layout Style</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {LAYOUTS.map((layout) => (
+                        <button
+                          key={layout.id}
+                          onClick={() => setSelectedLayout(layout.id)}
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all ${
+                            selectedLayout === layout.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary hover:bg-secondary/80 text-foreground'
+                          }`}
+                        >
+                          {layout.icon}
+                          <span className="text-sm font-medium">{layout.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Frame Options */}
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-2 block">Border Style</label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {FRAMES.map((frame) => (
+                        <button
+                          key={frame.id}
+                          onClick={() => setSelectedFrame(frame.id)}
+                          className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg text-sm transition-all ${
+                            selectedFrame === frame.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                        >
+                          <span>{frame.emoji}</span>
+                          <span className="text-xs">{frame.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Default: "{templateConfig.headerText}"
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* GIF Tab Content */}
-      {activeTab === 'gif' && (
-        <div className="w-full max-w-2xl animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <div className="bg-card rounded-2xl p-4 sm:p-6 shadow-card mb-4">
-            <h3 className="font-display font-semibold text-base sm:text-lg mb-3 flex items-center gap-2">
-              <Play className="w-5 h-5" />
-              Animated GIF Export
-            </h3>
-            <p className="text-muted-foreground text-xs sm:text-sm mb-4">
-              Create an animated GIF from your photos with cool transitions
-            </p>
-            
-            {/* Transition selector */}
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">Transition Style</label>
-              <div className="grid grid-cols-5 gap-2">
-                {GIF_TRANSITIONS.map((transition) => (
-                  <button
-                    key={transition.id}
-                    onClick={() => setSelectedGifTransition(transition.id)}
-                    className={`p-2 sm:p-3 rounded-lg text-center transition-all ${
-                      selectedGifTransition === transition.id
-                        ? 'bg-primary text-primary-foreground shadow-button'
-                        : 'bg-secondary hover:bg-secondary/80'
-                    }`}
-                  >
-                    <span className="text-xs sm:text-sm font-medium">{transition.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Delay slider */}
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">
-                Frame Delay: {gifDelay}ms
-              </label>
-              <input
-                type="range"
-                min="300"
-                max="2000"
-                step="100"
-                value={gifDelay}
-                onChange={(e) => setGifDelay(Number(e.target.value))}
-                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
-              />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>Fast (300ms)</span>
-                <span>Slow (2000ms)</span>
-              </div>
-            </div>
-            
-            {/* Generate GIF button */}
-            <Button
-              onClick={generateAnimatedGif}
-              disabled={isGeneratingGif}
-              className="w-full"
-            >
-              {isGeneratingGif ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-                  Generating GIF...
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 mr-2" />
-                  Generate Animated GIF
-                </>
               )}
-            </Button>
-            
-            {/* GIF Preview */}
-            {gifDataUrl && (
-              <div className="mt-4 p-3 rounded-lg bg-secondary/50 border border-border">
-                <p className="text-sm font-medium mb-2 text-center">🎉 GIF Ready!</p>
-                <img 
-                  src={gifDataUrl} 
-                  alt="Animated GIF preview" 
-                  className="max-w-full h-auto rounded-lg mx-auto mb-3"
-                  style={{ maxHeight: '200px' }}
-                />
-                <Button onClick={handleDownloadGif} className="w-full" variant="secondary">
-                  <Download className="w-4 h-4 mr-2" />
-                  Download GIF
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
-      <div className="relative animate-fade-scale-in">
-        {/* Photo strip display */}
-        <div className="photo-strip p-3 sm:p-6 shadow-photo">
-          <canvas
-            ref={canvasRef}
-            className="max-w-full h-auto rounded-lg mx-auto"
-            style={{ maxHeight: '40vh' }}
-          />
+              {/* Template Tab */}
+              {activeTab === 'template' && (
+                <div className="space-y-4">
+                  {/* Theme Selection */}
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-2 block">Choose Theme</label>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {TEMPLATES.map((template) => (
+                        <button
+                          key={template.id}
+                          onClick={() => setSelectedTemplate(template.id)}
+                          className={`flex flex-col items-center gap-0.5 p-2 rounded-lg transition-all ${
+                            selectedTemplate === template.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                        >
+                          <span className="text-lg">{template.emoji}</span>
+                          <span className="text-[10px] font-medium">{template.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-          {isGenerating && (
-            <div className="absolute inset-0 flex items-center justify-center bg-card/80 rounded-2xl">
-              <div className="text-center">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                <p className="font-medium text-foreground">Creating your photo strip...</p>
-              </div>
+                  {/* Custom Text */}
+                  <div className="space-y-3 pt-2 border-t border-border">
+                    <label className="text-xs font-medium text-muted-foreground block">Custom Text</label>
+                    <input
+                      type="text"
+                      value={customHeaderText}
+                      onChange={(e) => setCustomHeaderText(e.target.value.slice(0, HEADER_MAX_CHARS))}
+                      placeholder={selectedTemplate !== 'none' ? templateConfig.headerText : 'Header text...'}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      maxLength={HEADER_MAX_CHARS}
+                    />
+                    <input
+                      type="text"
+                      value={customFooterText}
+                      onChange={(e) => setCustomFooterText(e.target.value.slice(0, FOOTER_MAX_CHARS))}
+                      placeholder="Footer text..."
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      maxLength={FOOTER_MAX_CHARS}
+                    />
+                    {(customHeaderText || customFooterText) && (
+                      <button
+                        onClick={() => { 
+                          setCustomHeaderText(''); 
+                          setCustomFooterText(''); 
+                          setDebouncedHeaderText('');
+                          setDebouncedFooterText('');
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        ↩ Reset text
+                      </button>
+                    )}
+                  </div>
+
+                  {selectedTemplate !== 'none' && (
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/10 text-sm">
+                      <span>{templateConfig.emoji}</span>
+                      <span className="font-medium">{templateConfig.name} active</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* GIF Tab */}
+              {activeTab === 'gif' && (
+                <div className="space-y-4">
+                  {/* Transition Options */}
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-2 block">Transition</label>
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {GIF_TRANSITIONS.map((transition) => (
+                        <button
+                          key={transition.id}
+                          onClick={() => setSelectedGifTransition(transition.id)}
+                          className={`py-2 px-1 rounded-lg text-center transition-all ${
+                            selectedGifTransition === transition.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary hover:bg-secondary/80'
+                          }`}
+                        >
+                          <span className="text-xs font-medium">{transition.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Speed Slider */}
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-2 block">
+                      Speed: {gifDelay}ms
+                    </label>
+                    <input
+                      type="range"
+                      min="300"
+                      max="2000"
+                      step="100"
+                      value={gifDelay}
+                      onChange={(e) => setGifDelay(Number(e.target.value))}
+                      className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                      <span>Fast</span>
+                      <span>Slow</span>
+                    </div>
+                  </div>
+
+                  {/* Generate Button */}
+                  <Button
+                    onClick={generateAnimatedGif}
+                    disabled={isGeneratingGif}
+                    className="w-full"
+                    size="default"
+                  >
+                    {isGeneratingGif ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Create GIF
+                      </>
+                    )}
+                  </Button>
+
+                  {/* GIF Preview */}
+                  {gifDataUrl && (
+                    <div className="p-3 rounded-lg bg-secondary/50 border border-border">
+                      <img 
+                        src={gifDataUrl} 
+                        alt="Animated GIF" 
+                        className="max-w-full h-auto rounded-lg mx-auto mb-2"
+                        style={{ maxHeight: '120px' }}
+                      />
+                      <Button onClick={handleDownloadGif} className="w-full" variant="secondary" size="sm">
+                        <Download className="w-4 h-4 mr-1.5" />
+                        Download GIF
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Footer Info */}
+          <p className="mt-3 text-[11px] text-muted-foreground text-center">
+            {selectedTemplate !== 'none' && <span className="mr-1">🎨 {templateConfig.name}</span>}
+            High-quality PNG • Print ready
+          </p>
         </div>
-
-        {/* Decorative tape */}
-        <div className="absolute -top-2 sm:-top-3 left-1/2 -translate-x-1/2 w-12 sm:w-16 h-4 sm:h-6 bg-yellow/80 rotate-2 rounded-sm" />
       </div>
-
-      {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6 sm:mt-8 animate-slide-up w-full max-w-md sm:max-w-none sm:w-auto" style={{ animationDelay: '0.3s' }}>
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={onStartOver}
-          className="font-display w-full sm:w-auto text-sm sm:text-base"
-        >
-          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-          Take New Photos
-        </Button>
-        <Button
-          size="lg"
-          onClick={handleDownload}
-          disabled={isGenerating}
-          className="font-display w-full sm:w-auto text-sm sm:text-base"
-        >
-          <Download className="w-4 h-4 sm:w-5 sm:h-5" />
-          Download Strip
-        </Button>
-      </div>
-
-      <p className="mt-4 sm:mt-6 text-xs text-muted-foreground animate-slide-up text-center" style={{ animationDelay: '0.5s' }}>
-        {selectedTemplate !== 'none' && <span className="mr-2">🎨 {templateConfig.name} Theme</span>}
-        High-quality PNG • Ready for printing or sharing
-      </p>
     </div>
   );
 };

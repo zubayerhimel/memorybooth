@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Camera, RotateCcw, AlertCircle, SwitchCamera, Timer } from 'lucide-react';
+import { Camera, RotateCcw, AlertCircle, SwitchCamera, Timer, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCamera } from '@/hooks/useCamera';
 import { Photo } from '@/types/photobooth';
@@ -116,6 +116,10 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
 
   const handleRetake = () => {
     setPhotos([]);
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const remainingPhotos = MAX_PHOTOS - photos.length;
@@ -293,18 +297,32 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
               {[...Array(MAX_PHOTOS)].map((_, index) => (
                 <div
                   key={index}
-                  className={`flex-shrink-0 w-20 h-16 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-lg overflow-hidden transition-all duration-300 ${
+                  className={`relative group flex-shrink-0 w-20 h-16 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-lg overflow-hidden transition-all duration-300 ${
                     photos[index] 
                       ? 'shadow-soft' 
                       : 'bg-muted border-2 border-dashed border-border'
                   }`}
                 >
                   {photos[index] ? (
-                    <img
-                      src={photos[index].dataUrl}
-                      alt={`Photo ${index + 1}`}
-                      className="w-full h-full object-cover animate-fade-scale-in"
-                    />
+                    <>
+                      <img
+                        src={photos[index].dataUrl}
+                        alt={`Photo ${index + 1}`}
+                        className="w-full h-full object-cover animate-fade-scale-in"
+                      />
+                      {/* Delete button - shows on hover/tap */}
+                      <button
+                        onClick={() => handleRemovePhoto(index)}
+                        className="absolute top-1 right-1 w-5 h-5 sm:w-6 sm:h-6 bg-destructive/90 hover:bg-destructive text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md"
+                        title="Remove this photo"
+                      >
+                        <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                      </button>
+                      {/* Photo number badge */}
+                      <div className="absolute bottom-1 left-1 w-5 h-5 bg-black/50 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                        {index + 1}
+                      </div>
+                    </>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-muted-foreground font-medium text-sm">
@@ -317,6 +335,9 @@ export const CameraView = ({ onPhotosComplete, onBack }: CameraViewProps) => {
             </div>
             <div className="mt-2 sm:mt-3 text-center">
               <p className="text-xs text-muted-foreground font-medium">Photo Strip</p>
+              {photos.length > 0 && (
+                <p className="text-[10px] text-muted-foreground mt-0.5">Tap photo to remove</p>
+              )}
             </div>
           </div>
         </div>
