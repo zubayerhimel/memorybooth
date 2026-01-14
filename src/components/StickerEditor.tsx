@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { ArrowLeft, ArrowRight, Trash2, RotateCw, Plus, Minus, Type } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Trash2, RotateCw, Plus, Minus, Type, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Photo, Sticker, StickerOption, FilterType, TextOverlay } from '@/types/photobooth';
@@ -261,6 +261,38 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
     setSelectedTextId(null);
   };
 
+  const copyDecorationsToAll = useCallback(() => {
+    const currentStickers = selectedPhoto.stickers;
+    const currentTextOverlays = selectedPhoto.textOverlays;
+    
+    if (currentStickers.length === 0 && currentTextOverlays.length === 0) return;
+
+    setEditedPhotos((prev) =>
+      prev.map((photo, index) => {
+        if (index === selectedPhotoIndex) return photo;
+        
+        // Create new stickers with unique IDs
+        const newStickers = currentStickers.map((sticker) => ({
+          ...sticker,
+          id: `sticker-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        }));
+        
+        // Create new text overlays with unique IDs
+        const newTextOverlays = currentTextOverlays.map((text) => ({
+          ...text,
+          id: `text-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        }));
+
+        return {
+          ...photo,
+          stickers: [...photo.stickers, ...newStickers],
+          textOverlays: [...photo.textOverlays, ...newTextOverlays],
+        };
+      })
+    );
+  }, [selectedPhoto, selectedPhotoIndex]);
+
+  const hasDecorations = selectedPhoto.stickers.length > 0 || selectedPhoto.textOverlays.length > 0;
   const selectedStickerData = selectedPhoto.stickers.find((s) => s.id === selectedStickerId);
   const selectedTextData = selectedPhoto.textOverlays.find((t) => t.id === selectedTextId);
 
@@ -423,6 +455,21 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                 </button>
               ))}
             </div>
+
+            {/* Copy to All Photos button */}
+            {hasDecorations && editedPhotos.length > 1 && (
+              <div className="flex justify-center mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyDecorationsToAll}
+                  className="gap-2"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy decorations to all photos
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Stickers & Text panel */}
