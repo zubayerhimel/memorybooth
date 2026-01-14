@@ -456,18 +456,39 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
               ))}
             </div>
 
-            {/* Copy to All Photos button */}
-            {hasDecorations && editedPhotos.length > 1 && (
-              <div className="flex justify-center mt-3">
+            {/* Decoration action buttons */}
+            {hasDecorations && (
+              <div className="flex justify-center gap-2 mt-3 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={copyDecorationsToAll}
+                  onClick={() => {
+                    setEditedPhotos((prev) =>
+                      prev.map((photo, index) =>
+                        index === selectedPhotoIndex
+                          ? { ...photo, stickers: [], textOverlays: [] }
+                          : photo
+                      )
+                    );
+                    setSelectedStickerId(null);
+                    setSelectedTextId(null);
+                  }}
                   className="gap-2"
                 >
-                  <Copy className="w-4 h-4" />
-                  Copy decorations to all photos
+                  <Trash2 className="w-4 h-4" />
+                  Clear all
                 </Button>
+                {editedPhotos.length > 1 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyDecorationsToAll}
+                    className="gap-2"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copy to all
+                  </Button>
+                )}
               </div>
             )}
           </div>
