@@ -59,6 +59,22 @@ const FILTER_CLASSES: Record<FilterType, string> = {
   dreamy: 'filter-dreamy',
   electric: 'filter-electric',
   blur: 'filter-blur',
+  'soft-blur': 'filter-soft-blur',
+  'tilt-shift': 'filter-tilt-shift',
+  haze: 'filter-haze',
+  dramatic: 'filter-dramatic',
+  sunset: 'filter-sunset',
+  cinema: 'filter-cinema',
+  retro: 'filter-retro',
+  fade: 'filter-fade',
+  vibrant: 'filter-vibrant',
+  muted: 'filter-muted',
+  'x-ray': 'filter-x-ray',
+  thermal: 'filter-thermal',
+  negative: 'filter-negative',
+  duotone: 'filter-duotone',
+  lomo: 'filter-lomo',
+  polaroid: 'filter-polaroid',
 };
 
 const TEXT_COLORS = [

@@ -25,6 +25,22 @@ const FILTERS: FilterOption[] = [
   { id: 'dreamy', name: 'Dreamy', className: 'filter-dreamy' },
   { id: 'electric', name: 'Electric', className: 'filter-electric' },
   { id: 'blur', name: 'Blur', className: 'filter-blur' },
+  { id: 'soft-blur', name: 'Soft Focus', className: 'filter-soft-blur' },
+  { id: 'tilt-shift', name: 'Tilt Shift', className: 'filter-tilt-shift' },
+  { id: 'haze', name: 'Haze', className: 'filter-haze' },
+  { id: 'dramatic', name: 'Dramatic', className: 'filter-dramatic' },
+  { id: 'sunset', name: 'Sunset', className: 'filter-sunset' },
+  { id: 'cinema', name: 'Cinema', className: 'filter-cinema' },
+  { id: 'retro', name: 'Retro', className: 'filter-retro' },
+  { id: 'fade', name: 'Fade', className: 'filter-fade' },
+  { id: 'vibrant', name: 'Vibrant', className: 'filter-vibrant' },
+  { id: 'muted', name: 'Muted', className: 'filter-muted' },
+  { id: 'x-ray', name: 'X-Ray', className: 'filter-x-ray' },
+  { id: 'thermal', name: 'Thermal', className: 'filter-thermal' },
+  { id: 'negative', name: 'Negative', className: 'filter-negative' },
+  { id: 'duotone', name: 'Duotone', className: 'filter-duotone' },
+  { id: 'lomo', name: 'Lomo', className: 'filter-lomo' },
+  { id: 'polaroid', name: 'Polaroid', className: 'filter-polaroid' },
 ];
 
 export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) => {

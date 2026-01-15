@@ -1,4 +1,4 @@
-export type FilterType = 'none' | 'bw' | 'sepia' | 'vintage' | 'pop-art' | 'cool' | 'warm' | 'cyberpunk' | 'neon' | 'vaporwave' | 'noir' | 'dreamy' | 'electric' | 'blur';
+export type FilterType = 'none' | 'bw' | 'sepia' | 'vintage' | 'pop-art' | 'cool' | 'warm' | 'cyberpunk' | 'neon' | 'vaporwave' | 'noir' | 'dreamy' | 'electric' | 'blur' | 'soft-blur' | 'tilt-shift' | 'haze' | 'dramatic' | 'sunset' | 'cinema' | 'retro' | 'fade' | 'vibrant' | 'muted' | 'x-ray' | 'thermal' | 'negative' | 'duotone' | 'lomo' | 'polaroid';
 
 export interface Sticker {
   id: string;

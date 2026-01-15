@@ -467,6 +467,74 @@
   filter: blur(2px) brightness(105%);
 }
 
+/* New blur effects */
+.filter-soft-blur {
+  filter: blur(1px) brightness(108%) contrast(95%);
+}
+
+.filter-tilt-shift {
+  filter: blur(0.3px) saturate(120%) contrast(110%);
+}
+
+.filter-haze {
+  filter: blur(0.8px) brightness(115%) saturate(90%) contrast(85%);
+}
+
+/* Dramatic & Mood effects */
+.filter-dramatic {
+  filter: contrast(150%) brightness(95%) saturate(110%);
+}
+
+.filter-sunset {
+  filter: sepia(25%) saturate(140%) hue-rotate(-10deg) brightness(105%) contrast(105%);
+}
+
+.filter-cinema {
+  filter: contrast(115%) saturate(85%) brightness(98%) sepia(10%);
+}
+
+.filter-retro {
+  filter: sepia(40%) saturate(70%) contrast(120%) brightness(95%);
+}
+
+.filter-fade {
+  filter: contrast(85%) brightness(115%) saturate(75%);
+}
+
+/* Color effects */
+.filter-vibrant {
+  filter: saturate(180%) contrast(110%) brightness(105%);
+}
+
+.filter-muted {
+  filter: saturate(50%) contrast(95%) brightness(105%);
+}
+
+/* Special effects */
+.filter-x-ray {
+  filter: invert(100%) grayscale(100%) contrast(150%) brightness(120%);
+}
+
+.filter-thermal {
+  filter: saturate(200%) hue-rotate(180deg) contrast(130%) brightness(90%);
+}
+
+.filter-negative {
+  filter: invert(100%) hue-rotate(180deg);
+}
+
+.filter-duotone {
+  filter: grayscale(100%) sepia(100%) saturate(300%) hue-rotate(290deg) contrast(90%);
+}
+
+.filter-lomo {
+  filter: contrast(130%) saturate(130%) brightness(95%) sepia(10%);
+}
+
+.filter-polaroid {
+  filter: sepia(20%) contrast(95%) saturate(90%) brightness(110%);
+}
+
 
 /* Common scrollable area styling */
 .custom-scrollbar {
