@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { X, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GallerySession } from '@/types/photobooth';
@@ -16,11 +17,19 @@ export const ImagePreviewModal = ({
   onRemove,
 }: ImagePreviewModalProps) => {
   return (
-    <div 
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-3 sm:p-4 animate-fade-in overflow-y-auto"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       onClick={onClose}
     >
-      <div 
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
         className="relative w-full max-w-2xl flex flex-col items-center my-auto" 
         onClick={(e) => e.stopPropagation()}
       >
@@ -67,7 +76,7 @@ export const ImagePreviewModal = ({
             Delete
           </Button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

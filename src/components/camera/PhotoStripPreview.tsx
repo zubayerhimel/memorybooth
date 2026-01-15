@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { Photo } from '@/types/photobooth';
 import { MAX_PHOTOS } from '@/constants/camera';
@@ -9,7 +10,12 @@ interface PhotoStripPreviewProps {
 
 export const PhotoStripPreview = ({ photos, onRemovePhoto }: PhotoStripPreviewProps) => {
   return (
-    <div className="photo-strip w-full sm:w-40 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+      className="photo-strip w-full sm:w-40"
+    >
       <div className="flex flex-row sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
         {[...Array(MAX_PHOTOS)].map((_, index) => (
           <div
@@ -56,6 +62,6 @@ export const PhotoStripPreview = ({ photos, onRemovePhoto }: PhotoStripPreviewPr
           <p className="text-[10px] text-muted-foreground mt-0.5">Tap photo to remove</p>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };

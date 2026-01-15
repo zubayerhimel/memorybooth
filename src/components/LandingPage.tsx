@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { Camera, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useGalleryHistory } from '@/hooks/useGalleryHistory';
@@ -50,33 +51,48 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
       <FeatureBadges />
 
       {/* CTA Button */}
-      <Button
-        onClick={onStart}
-        size="xl"
-        className="animate-slide-up font-display"
-        style={{ animationDelay: '0.6s' }}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }}
       >
-        <Camera className="size-8" />
-        Start Photo Booth
-      </Button>
+        <Button
+          onClick={onStart}
+          size="xl"
+          className="font-display"
+        >
+          <Camera className="size-8" />
+          Start Photo Booth
+        </Button>
+      </motion.div>
 
       {/* Gallery History Button */}
       {hasHistory && (
-        <Button
-          onClick={() => setShowGallery(true)}
-          variant="ghost"
-          className="mt-4 animate-slide-up text-muted-foreground hover:text-foreground"
-          style={{ animationDelay: '0.7s' }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7, ease: 'easeOut' }}
         >
-          <History className="w-4 h-4" />
-          View Gallery ({sessions.length})
-        </Button>
+          <Button
+            onClick={() => setShowGallery(true)}
+            variant="ghost"
+            className="mt-4 text-muted-foreground hover:text-foreground"
+          >
+            <History className="w-4 h-4" />
+            View Gallery ({sessions.length})
+          </Button>
+        </motion.div>
       )}
 
       {/* Footer note */}
-      <p className="mt-6 sm:mt-8 text-xs text-muted-foreground animate-slide-up text-center" style={{ animationDelay: '0.8s' }}>
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8, ease: 'easeOut' }}
+        className="mt-6 sm:mt-8 text-xs text-muted-foreground text-center"
+      >
         Works on all devices • Camera access required
-      </p>
+      </motion.p>
 
       {/* Gallery Modal */}
       {showGallery && (

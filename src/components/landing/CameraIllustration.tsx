@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Heart, Sparkles } from 'lucide-react';
 
 export const CameraIllustration = () => {
@@ -21,7 +22,12 @@ export const CameraIllustration = () => {
   }, []);
 
   return (
-    <div className="relative mb-6 sm:mb-8 animate-slide-up">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="relative mb-6 sm:mb-8"
+    >
       {/* Main Camera Body */}
       <div className="relative w-52 h-56 sm:w-72 sm:h-80 animate-float">
         {/* Camera outer shell - Instax style */}
@@ -109,6 +115,6 @@ export const CameraIllustration = () => {
       <Sparkles className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 w-8 h-8 sm:w-10 sm:h-10 text-yellow animate-pulse-soft" style={{ animationDelay: '0.5s' }} />
       <div className="absolute top-8 -left-3 sm:-left-6 w-4 h-4 sm:w-5 sm:h-5 bg-accent rounded-full animate-bounce-soft opacity-70" style={{ animationDelay: '0.2s' }} />
       <div className="absolute top-16 -right-2 sm:-right-5 w-3 h-3 sm:w-4 sm:h-4 bg-lavender rounded-full animate-bounce-soft opacity-60" style={{ animationDelay: '0.7s' }} />
-    </div>
+    </motion.div>
   );
 };

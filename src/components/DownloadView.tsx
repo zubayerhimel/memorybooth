@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'motion/react';
 import { Photo, TemplateTheme, GifTransition } from '@/types/photobooth';
 import { useGalleryHistory } from '@/hooks/useGalleryHistory';
 import { usePhotoStripGenerator } from '@/hooks/usePhotoStripGenerator';
@@ -132,7 +133,12 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
       <DownloadHeader />
 
       {/* Main Content - Two Column Layout */}
-      <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 lg:gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+        className="w-full max-w-5xl flex flex-col lg:flex-row gap-4 lg:gap-6"
+      >
         
         {/* Left Side - Photo Preview */}
         <div className="lg:w-1/2 flex flex-col items-center">
@@ -202,7 +208,7 @@ export const DownloadView = ({ photos, onStartOver }: DownloadViewProps) => {
             High-quality PNG • Print ready
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

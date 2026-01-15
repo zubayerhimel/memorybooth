@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { Camera, Sparkles, Download } from 'lucide-react';
 
 export const FeatureBadges = () => {
@@ -8,7 +9,12 @@ export const FeatureBadges = () => {
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-6 sm:mb-10 animate-slide-up" style={{ animationDelay: '0.4s' }}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
+      className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-6 sm:mb-10"
+    >
       {features.map((feature, index) => (
         <div key={index} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
           <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full ${feature.bgColor} flex items-center justify-center`}>
@@ -17,6 +23,6 @@ export const FeatureBadges = () => {
           <span className="font-medium">{feature.label}</span>
         </div>
       ))}
-    </div>
+    </motion.div>
   );
 };

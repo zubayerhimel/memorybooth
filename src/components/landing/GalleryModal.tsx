@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { History, X, Trash2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GallerySession } from '@/types/photobooth';
@@ -22,8 +23,20 @@ export const GalleryModal = ({
   formatDate,
 }: GalleryModalProps) => {
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 animate-fade-in">
-      <div className="bg-card rounded-xl sm:rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] sm:max-h-[85vh] overflow-hidden animate-slide-up">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="bg-card rounded-xl sm:rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] sm:max-h-[85vh] overflow-hidden"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -119,7 +132,7 @@ export const GalleryModal = ({
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };

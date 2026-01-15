@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Trash2, RotateCw, Plus, Minus, Type, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -300,14 +301,19 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6">
       <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-3 sm:mb-6 animate-slide-up">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center mb-3 sm:mb-6"
+        >
           <h2 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-0.5 sm:mb-1">
             Decorate Your Photos! 🎨
           </h2>
           <p className="text-muted-foreground text-xs sm:text-base">
             Add stickers and text, then drag to position
           </p>
-        </div>
+        </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 items-start justify-center">
           {/* Main photo with stickers */}
@@ -494,7 +500,12 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
           </div>
 
           {/* Stickers & Text panel */}
-          <div className="w-full lg:w-80 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            className="w-full lg:w-80"
+          >
             <div className="bg-card rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-card">
               {/* Tab switcher */}
               <div className="flex gap-1.5 sm:gap-2 mb-3 sm:mb-4">
@@ -770,7 +781,7 @@ export const StickerEditor = ({ photos, onComplete, onBack }: StickerEditorProps
                 Continue
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

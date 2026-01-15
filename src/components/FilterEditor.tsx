@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Photo, FilterType, FilterOption } from '@/types/photobooth';
@@ -55,14 +56,19 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
     <div className="min-h-screen gradient-hero flex flex-col items-center justify-start sm:justify-center p-3 sm:p-6 pt-4 sm:pt-6">
       <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="text-center mb-4 sm:mb-8 animate-slide-up">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="text-center mb-4 sm:mb-8"
+        >
           <h2 className="font-display text-lg sm:text-2xl font-bold text-foreground mb-0.5 sm:mb-1">
             Add Some Magic ✨
           </h2>
           <p className="text-muted-foreground text-xs sm:text-base">
             Choose filters for your photos
           </p>
-        </div>
+        </motion.div>
 
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 items-start justify-center">
           {/* Main photo preview */}
@@ -125,7 +131,12 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
           </div>
 
           {/* Filters panel */}
-          <div className="w-full lg:w-72 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            className="w-full lg:w-72"
+          >
             <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-card">
               <h3 className="font-display font-semibold text-base sm:text-lg mb-3 sm:mb-4">Filters</h3>
 
@@ -186,10 +197,15 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
                 Continue
               </Button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Photo strip preview - hide on mobile */}
-          <div className="photo-strip w-32 hidden lg:block animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
+            className="photo-strip w-32 hidden lg:block"
+          >
             <div className="flex flex-col gap-2">
               {editedPhotos.map((photo, index) => (
                 <div
@@ -207,7 +223,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
             <div className="mt-3 text-center">
               <p className="text-xs text-muted-foreground font-medium">Preview</p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
