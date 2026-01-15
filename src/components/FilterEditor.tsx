@@ -137,7 +137,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
             transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
             className="w-full lg:w-72"
           >
-            <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-card">
+            <div className="bg-card rounded-xl sm:rounded-2xl p-4 shadow-card">
               <h3 className="font-display font-semibold text-base sm:text-lg mb-3 sm:mb-4">Filters</h3>
 
               {/* Apply to all toggle */}
@@ -159,7 +159,7 @@ export const FilterEditor = ({ photos, onComplete, onBack }: FilterEditorProps) 
               </button>
 
               {/* Filter options */}
-              <div className="grid grid-cols-3 sm:grid-cols-2 gap-1.5 sm:gap-2 max-h-[35vh] sm:max-h-[50vh] overflow-y-auto pr-1">
+              <div className="grid grid-cols-3 sm:grid-cols-2 gap-1.5 sm:gap-2 max-h-[35vh] sm:max-h-[50vh] overflow-y-auto pl-1 pr-1.5 custom-scrollbar">
                 {FILTERS.map((filter) => (
                   <button
                     key={filter.id}
