@@ -1,4 +1,34 @@
-export type FilterType = 'none' | 'bw' | 'sepia' | 'vintage' | 'pop-art' | 'cool' | 'warm' | 'cyberpunk' | 'neon' | 'vaporwave' | 'noir' | 'dreamy' | 'electric' | 'blur' | 'soft-blur' | 'tilt-shift' | 'haze' | 'dramatic' | 'sunset' | 'cinema' | 'retro' | 'fade' | 'vibrant' | 'muted' | 'x-ray' | 'thermal' | 'negative' | 'duotone' | 'lomo' | 'polaroid';
+export type FilterType =
+  | "none"
+  | "bw"
+  | "sepia"
+  | "vintage"
+  | "pop-art"
+  | "cool"
+  | "warm"
+  | "cyberpunk"
+  | "neon"
+  | "vaporwave"
+  | "noir"
+  | "dreamy"
+  | "electric"
+  | "blur"
+  | "soft-blur"
+  | "tilt-shift"
+  | "haze"
+  | "dramatic"
+  | "sunset"
+  | "cinema"
+  | "retro"
+  | "fade"
+  | "vibrant"
+  | "muted"
+  | "x-ray"
+  | "thermal"
+  | "negative"
+  | "duotone"
+  | "lomo"
+  | "polaroid";
 
 export interface Sticker {
   id: string;
@@ -40,10 +70,10 @@ export interface StickerOption {
   name: string;
 }
 
-export type AppStep = 'landing' | 'camera' | 'filters' | 'stickers' | 'download';
+export type AppStep = "landing" | "camera" | "filters" | "stickers" | "download" | "video-filters" | "video-download";
 
 // Collage Template Types
-export type TemplateTheme = 'none' | 'birthday' | 'wedding' | 'graduation' | 'christmas' | 'halloween' | 'valentines' | 'newyear';
+export type TemplateTheme = "none" | "birthday" | "wedding" | "graduation" | "christmas" | "halloween" | "valentines" | "newyear";
 
 export interface TemplateConfig {
   id: TemplateTheme;
@@ -55,7 +85,7 @@ export interface TemplateConfig {
   headerText: string;
   footerText: string;
   decorations: TemplateDecoration[];
-  borderStyle: 'solid' | 'dashed' | 'double' | 'none';
+  borderStyle: "solid" | "dashed" | "double" | "none";
   font: string;
 }
 
@@ -65,7 +95,7 @@ export interface TemplateDecoration {
 }
 
 // GIF Export Types
-export type GifTransition = 'none' | 'fade' | 'slide' | 'zoom' | 'bounce';
+export type GifTransition = "none" | "fade" | "slide" | "zoom" | "bounce";
 
 export interface GifExportOptions {
   delay: number; // delay between frames in ms
@@ -84,3 +114,16 @@ export interface GallerySession {
   template: string;
   photoCount: number;
 }
+
+// Video Recording Types
+export interface VideoRecording {
+  id: string;
+  blobUrl: string;
+  blob: Blob;
+  duration: number; // duration in seconds
+  filter: FilterType;
+  timestamp: number;
+  thumbnailUrl?: string;
+}
+
+export type CaptureMode = "photo" | "video";
