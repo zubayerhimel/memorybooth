@@ -1,5 +1,5 @@
-import { Square, Video, RotateCcw, SwitchCamera } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft, Square, SwitchCamera, Video } from "lucide-react";
 import { VideoDurationSelector } from "./VideoDurationSelector";
 
 interface VideoControlsProps {
@@ -34,7 +34,7 @@ export const VideoControls = ({
   return (
     <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
       <Button variant="secondary" size="icon" onClick={onBack} disabled={isRecording} className="h-10 w-10 sm:h-12 sm:w-12">
-        <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
       </Button>
 
       <VideoDurationSelector selectedDuration={selectedDuration} showOptions={showDurationOptions} isDisabled={isRecording} onToggle={onDurationToggle} onSelect={onDurationSelect} />

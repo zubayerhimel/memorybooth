@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { COUNTDOWN_INTERVAL, DEFAULT_TIMER, DEFAULT_VIDEO_DURATION, EJECT_ANIMATION_DURATION, FLASH_DURATION, IMAGE_CAPTURE_INTERVAL, MAX_PHOTOS, VIDEO_COUNTDOWN_TIMER } from "@/constants/camera";
 import { useCamera } from "@/hooks/useCamera";
 import { useVideoRecorder } from "@/hooks/useVideoRecorder";
-import { Photo, VideoRecording, CaptureMode } from "@/types/photobooth";
-import { MAX_PHOTOS, DEFAULT_TIMER, FLASH_DURATION, EJECT_ANIMATION_DURATION, COUNTDOWN_INTERVAL, DEFAULT_VIDEO_DURATION, VIDEO_COUNTDOWN_TIMER } from "@/constants/camera";
-import { CameraHeader, CameraBody, PhotoStripPreview, ModeToggle, RecordingIndicator, VideoControls, VideoPreview, EjectingPhoto } from "./camera";
+import { CaptureMode, Photo, VideoRecording } from "@/types/photobooth";
+import { ArrowLeft, RefreshCcw, SwitchCamera } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { CameraHeader, EjectingPhoto, ModeToggle, PhotoStripPreview, RecordingIndicator, VideoControls, VideoPreview } from "./camera";
 import { CountdownOverlay } from "./camera/CountdownOverlay";
+import { Button } from "./ui/button";
 
 interface CameraViewProps {
   onPhotosComplete: (photos: Photo[]) => void;
@@ -93,7 +95,7 @@ export const CameraView = ({ onPhotosComplete, onVideoComplete, onBack }: Camera
         return updated;
       });
     },
-    [onPhotosComplete]
+    [onPhotosComplete],
   );
 
   const handleCapture = useCallback(() => {
@@ -282,29 +284,20 @@ export const CameraView = ({ onPhotosComplete, onVideoComplete, onBack }: Camera
             {/* Controls based on mode */}
             {captureMode === "photo" ? (
               <div className="flex items-center justify-center gap-2 sm:gap-4 mt-4 sm:mt-6">
-                <button onClick={onBack} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-secondary flex items-center justify-center">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </button>
+                <Button variant="secondary" size="icon" onClick={onBack} disabled={isCapturing} className="h-10 w-10 sm:h-12 sm:w-12">
+                  <ArrowLeft />
+                </Button>
 
                 <div className="relative">
-                  <button
-                    onClick={() => setShowTimerOptions(!showTimerOptions)}
-                    disabled={isCapturing}
-                    className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-secondary flex items-center justify-center disabled:opacity-50">
+                  <Button variant="secondary" size="icon" onClick={() => setShowTimerOptions(!showTimerOptions)} disabled={isCapturing} className="h-10 w-10 sm:h-12 sm:w-12 disabled:opacity-50">
                     <span className="text-xs font-bold">{selectedTimer}s</span>
-                  </button>
-
+                  </Button>
                   {showTimerOptions && (
                     <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-popover border rounded-lg p-2 flex gap-1 z-10">
-                      {[0, 3, 5, 10].map((time) => (
-                        <button
-                          key={time}
-                          onClick={() => handleTimerSelect(time)}
-                          className={`h-8 w-10 rounded text-sm ${selectedTimer === time ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>
+                      {IMAGE_CAPTURE_INTERVAL.map((time) => (
+                        <Button className="h-8 w-10" size="sm" variant={selectedTimer === time ? "default" : "ghost"} key={time} onClick={() => handleTimerSelect(time)}>
                           {time}s
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -325,27 +318,19 @@ export const CameraView = ({ onPhotosComplete, onVideoComplete, onBack }: Camera
                   </svg>
                 </button>
 
-                <button onClick={flipCamera} disabled={isCapturing} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-secondary flex items-center justify-center disabled:opacity-50">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                </button>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={flipCamera}
+                  disabled={isCapturing}
+                  className="h-10 w-10 sm:h-12 sm:w-12"
+                  title={facingMode === "user" ? "Switch to back camera" : "Switch to front camera"}>
+                  <SwitchCamera className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
 
-                <button onClick={handleRetake} disabled={photos.length === 0} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-secondary flex items-center justify-center disabled:opacity-50">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                </button>
+                <Button title="Retake photos" variant="secondary" onClick={handleRetake} disabled={photos.length === 0} className="h-10 w-10 sm:h-12 sm:w-12 disabled:opacity-50">
+                  <RefreshCcw />
+                </Button>
               </div>
             ) : (
               <VideoControls

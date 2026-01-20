@@ -1,4 +1,3 @@
-import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VIDEO_DURATION_OPTIONS } from "@/constants/camera";
 
@@ -14,10 +13,7 @@ export const VideoDurationSelector = ({ selectedDuration, showOptions, isDisable
   return (
     <div className="relative">
       <Button variant="secondary" size="icon" onClick={onToggle} disabled={isDisabled} className="h-10 w-10 sm:h-12 sm:w-12" title="Video duration">
-        <div className="flex flex-col items-center">
-          <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="text-[9px] sm:text-[10px] font-bold -mt-0.5">{selectedDuration}s</span>
-        </div>
+        {selectedDuration}s
       </Button>
 
       {showOptions && (
